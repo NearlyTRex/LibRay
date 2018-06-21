@@ -41,9 +41,9 @@ def bprint(byte):
 
 if __name__ == '__main__':
 
-  #core.IRD('ird.ird')
+  core.IRD('ird')
 
-  #sys.exit()
+  sys.exit()
   
   bprint(b'\x00\x00\x00\x00')
   bprint(b'\x00\x00\x0c\xbf')
@@ -51,7 +51,7 @@ if __name__ == '__main__':
   bprint(b'\x00\x00s\xc2\x7f')
   bprint(b'\x00\x00s\xc2\x80')
 
-  data = bytes(bytearray.fromhex("c9c1ec71205c2a6e8adc19795f9bfbd8"))
+  data = bytes(bytearray.fromhex("02EE0CE9E4C7CC1AD739ACC0DB6A3AA1"))
   key  = bytes(bytearray.fromhex("380bcf0b53455b3c7817ab4fa3ba90ed"))
   iv   = bytes(bytearray.fromhex("69474772af6fdab342743aefaa186287"))
 

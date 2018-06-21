@@ -17,6 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+import sys
 import gzip
 
 ORDER = 'big'
@@ -54,6 +55,21 @@ class IRD:
       self.header = ird.read(SECTOR*3)
       self.footer = ird.read(SECTOR)
       self.region_count = ird.read(1)
+      back = ird.tell()
+      prefix = bytes_to_int(ird.read(1))
+      length = prefix >> 1
+      if prefix & 0b00000001:
+        ird.seek(back)
+      
+      self.header = ird.read(length)
+      back = ird.tell()
+      prefix = bytes_to_int(ird.read(1))
+      length = prefix >> 1
+      ird.seek(back)
+      self.footer = ird.read(length)
+      self.region_count
+      print()
+      sys.exit()
       
       print(self.game_name, self.update_version, self.game_version, self.region_count)
 
@@ -67,10 +83,12 @@ class IRD:
         self.pic = ird.read(115)
       self.uid = ird.read(2)
 
+      print(self.pic)
       print(self.uid)
+      print(self.game_id)
     
     if filename != 'ird':
-      os.rm('ird')
+      os.remove('ird')
 
 
 
