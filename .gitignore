@@ -2,6 +2,7 @@
 *.iso
 *.ird
 ird
+region_*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
