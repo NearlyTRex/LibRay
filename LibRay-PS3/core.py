@@ -21,10 +21,31 @@ import sys
 import gzip
 
 ORDER = 'big'
+IRD_ORDER = 'little'
 SECTOR = 2048
 
 def bytes_to_int(byte):
   return int.from_bytes(byte, ORDER)
+
+def ird_bytes_to_int(byte):
+  return int.from_bytes(byte, IRD_ORDER)
+
+def read_seven_bit_encoded_int(fileobj):
+  # Read out an Int32 7 bits at a time. The high bit
+  # of the byte when on means to continue reading more bytes
+  count = 0
+  shift = 0
+  byte = -1
+  while (byte & 0x80) != 0 or byte == -1:
+    # Check for a corrupted stream. Read a max of 5 bytes.
+    if shift == (5 * 7):
+      raise ValueError
+    byte = ird_bytes_to_int(fileobj.read(1))
+    count |= (byte & 0x7F) << shift
+    shift += 7
+    print(byte, count, shift)
+  return count
+
 
 class IRD:
 
@@ -38,28 +59,54 @@ class IRD:
             outfile.write(gzfile.read())    
 
   def __init__(self, filename):
+   
     with open(filename, 'rb') as fileobj:
       if self.is_compressed(fileobj):
         self.uncompress(filename)
-
+    
     self.size = os.stat('ird').st_size
     with open('ird', 'rb') as ird:
       self.magic_string = ird.read(4)
-      self.version = bytes_to_int(ird.read(1))
+      self.version = ird_bytes_to_int(ird.read(1))
       self.game_id = ird.read(9)
-      self.game_name = ird.read(12)
+      length = read_seven_bit_encoded_int(ird)
+      self.game_name = ird.read(length)
       self.update_version = ird.read(4)
       self.game_version = ird.read(5)
+      self.app_version = ird.read(5)
       if self.version == 7:
         self.identifier = ird.read(4)
-      self.header = ird.read(SECTOR*3)
-      self.footer = ird.read(SECTOR)
-      self.region_count = ird.read(1)
+      if self.version < 9:
+        back = ird.tell()
+        length = read_seven_bit_encoded_int(ird)
+        if length:
+          self.header = ird.read(length)  
+        else:
+          ird.seek(back)
+        back = ird.tell()
+        length = read_seven_bit_encoded_int(ird)
+        if length:
+          self.footer = ird.read(length)
+        else:
+          ird.seek(back)
+      self.region_count = ird_bytes_to_int(ird.read(1))
+      self.region_hash = []
+      for i in range(0, self.region_count):
+        self.region_hash.append(ird.read(16))
+      self.file_count = ird_bytes_to_int(ird.read(4))
+      print(vars(self) )
+      
+
+      return
+      sys.exit()
       back = ird.tell()
       prefix = bytes_to_int(ird.read(1))
       length = prefix >> 1
       if prefix & 0b00000001:
         ird.seek(back)
+
+      
+
       
       self.header = ird.read(length)
       back = ird.tell()
@@ -68,8 +115,6 @@ class IRD:
       ird.seek(back)
       self.footer = ird.read(length)
       self.region_count
-      print()
-      sys.exit()
       
       print(self.game_name, self.update_version, self.game_version, self.region_count)
 

@@ -21,8 +21,10 @@
 import os
 import sys
 import core
+import base64
 import struct
 import shutil
+import binascii
 from Crypto.Cipher import AES
 
 def bytes_to_int(byte):
@@ -34,16 +36,35 @@ def int_to_hexstr(integer):
 def int_to_bytes(integer):
   return bytes(bytearray.fromhex(int_to_hexstr(integer)))
 
+def hexstr_to_bytes(hexstr):
+  return bytes(bytearray.fromhex(hexstr))
+
 def bprint(byte):
   byteint = bytes_to_int(byte)
   print(byte, '\t->', byteint, '\t->', byteint*8, '\t->', byteint*2048 )
 
+def decode(self, text):
+    '''
+    Remove the PKCS#7 padding from a text string
+    '''
+    nl = len(text)
+    val = int(binascii.hexlify(text[-1]), 16)
+    if val > self.k:
+        raise ValueError('Input is not padded or padding is corrupt')
+
+    l = nl - val
+    return text[:l]
+
+
+BS = 32
+pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS) 
+unpad = lambda s : s[:-ord(s[len(s)-1:])]
 
 if __name__ == '__main__':
-
-  core.IRD('ird')
-
-  sys.exit()
+  
+  #core.IRD('BCAS20001-CA107E13820801F29488EBEB7D82A2C4.ird')
+  #core.IRD('BLES00048-1AA29AD85F7770BDCED0B7030067D59A.ird')
+  #sys.exit()
   
   bprint(b'\x00\x00\x00\x00')
   bprint(b'\x00\x00\x0c\xbf')
@@ -51,21 +72,29 @@ if __name__ == '__main__':
   bprint(b'\x00\x00s\xc2\x7f')
   bprint(b'\x00\x00s\xc2\x80')
 
-  data = bytes(bytearray.fromhex("02EE0CE9E4C7CC1AD739ACC0DB6A3AA1"))
-  key  = bytes(bytearray.fromhex("380bcf0b53455b3c7817ab4fa3ba90ed"))
-  iv   = bytes(bytearray.fromhex("69474772af6fdab342743aefaa186287"))
+  data = hexstr_to_bytes("11089487d46ec9c1ec71205c2a6e8adc")
+  key  = hexstr_to_bytes("380bcf0b53455b3c7817ab4fa3ba90ed")
+  iv   = hexstr_to_bytes("69474772af6fdab342743aefaa186287")
 
   cipher = AES.new(key, AES.MODE_CBC, iv)
   disc_key = cipher.encrypt(data)
+  print(disc_key)
+  print(disc_key.hex())
+  disc_key = hexstr_to_bytes("01AD4F9DFED22E37998BDDC57E135935")
+  print(disc_key.hex())
+  print(unpad(disc_key.hex()))
+  disc_key = hexstr_to_bytes("DCD55A55B033905C58E7FE2A7F969F27")
 
   regions = [
     {'start': 0, 'end': 6682624, 'enc': False},
     {'start': 6682624, 'end': 59641856, 'enc': True},
     {'start': 59641856, 'end': 15537010688, 'enc': False},
+    {'start': 15537010688, 'end': 15537012736, 'enc': True }
     # There's also a last sector between 15537010688 and 15537012736, but seems like it's not used
   ]
 
   files = []
+  test = hexstr_to_bytes("70c2a1")
   with open(sys.argv[1], 'rb') as iso:
     for i, region in enumerate(regions):
       files.append('region_' + str(i))
@@ -81,16 +110,20 @@ if __name__ == '__main__':
           while iso.tell() < region['end']:
             data = iso.read(core.SECTOR)
             num = iso.tell()
-            iv = ['' for i in range(0,16)]
+            iv = bytearray([0 for i in range(0,16)])
             for j in range(0,16):
-              iv[16 - j - 1] = hex(ord(struct.pack("B", num & 0xFF))).replace('0x','')
+              iv[16 - j - 1] = (num & 0xFF) 
               num >>= 8
-      
-            iv = "".join(iv)[-16:]
-            #print(iv)
             
-            cipher = AES.new(disc_key, AES.MODE_CBC, iv)
-            output.write(cipher.decrypt(data))
+            cipher = AES.new(disc_key, AES.MODE_CBC, bytes(iv))
+            decrypted = cipher.decrypt(data)
+
+            if test in decrypted:
+              print(iv.hex())
+              print(data.hex())
+              print(decrypted.hex())
+
+            output.write(decrypted)
         print(iso.tell())
     
 
@@ -160,9 +193,6 @@ if __name__ == '__main__':
   
     
     
-
-
-
 
 
 

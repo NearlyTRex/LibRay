@@ -1,6 +1,7 @@
 # Custom
 *.iso
 *.ird
+*.txt
 ird
 region_*
 
