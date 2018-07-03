@@ -4,6 +4,10 @@
 *.txt
 ird
 region_*
+*.bin
+*.BIN
+*.ini
+*.INI
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

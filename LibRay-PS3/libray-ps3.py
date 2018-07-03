@@ -72,18 +72,19 @@ if __name__ == '__main__':
   bprint(b'\x00\x00s\xc2\x7f')
   bprint(b'\x00\x00s\xc2\x80')
 
-  data = hexstr_to_bytes("11089487d46ec9c1ec71205c2a6e8adc")
+  data = hexstr_to_bytes("11089487d46ec9c1ec71205c2a6e8adc") # bles00048
+  #data = hexstr_to_bytes("18c871628e0c3bbbd20b8a4cfb40b750") # bles000681
   key  = hexstr_to_bytes("380bcf0b53455b3c7817ab4fa3ba90ed")
   iv   = hexstr_to_bytes("69474772af6fdab342743aefaa186287")
 
   cipher = AES.new(key, AES.MODE_CBC, iv)
   disc_key = cipher.encrypt(data)
-  print(disc_key)
-  print(disc_key.hex())
-  disc_key = hexstr_to_bytes("01AD4F9DFED22E37998BDDC57E135935")
-  print(disc_key.hex())
-  print(unpad(disc_key.hex()))
-  disc_key = hexstr_to_bytes("DCD55A55B033905C58E7FE2A7F969F27")
+  #print(disc_key)
+  #print(disc_key.hex())
+  #disc_key = hexstr_to_bytes("01AD4F9DFED22E37998BDDC57E135935")
+  #print(disc_key.hex())
+  #print(unpad(disc_key.hex()))
+  #disc_key = hexstr_to_bytes("DCD55A55B033905C58E7FE2A7F969F27")
 
   regions = [
     {'start': 0, 'end': 6682624, 'enc': False},
@@ -94,7 +95,7 @@ if __name__ == '__main__':
   ]
 
   files = []
-  test = hexstr_to_bytes("70c2a1")
+  test = hexstr_to_bytes("533570a1")
   with open(sys.argv[1], 'rb') as iso:
     for i, region in enumerate(regions):
       files.append('region_' + str(i))
@@ -108,17 +109,21 @@ if __name__ == '__main__':
           continue
         else:
           while iso.tell() < region['end']:
-            data = iso.read(core.SECTOR)
-            num = iso.tell()
+            num = iso.tell() // 2048
+            backupnum = num
             iv = bytearray([0 for i in range(0,16)])
             for j in range(0,16):
               iv[16 - j - 1] = (num & 0xFF) 
               num >>= 8
+
+            data = iso.read(core.SECTOR)
             
             cipher = AES.new(disc_key, AES.MODE_CBC, bytes(iv))
             decrypted = cipher.decrypt(data)
 
             if test in decrypted:
+              print('nyees')
+              print(backupnum)
               print(iv.hex())
               print(data.hex())
               print(decrypted.hex())
@@ -133,67 +138,4 @@ if __name__ == '__main__':
         shutil.copyfileobj(fd, iso, 1024*1024*10)
     
   sys.exit()
-
-  size = os.stat(sys.argv[1]).st_size
-  size_hex = bytes(bytearray.fromhex(hex(int(size / 2048)).replace('0x','').zfill(16)))
-
-  print(size, size_hex)
-
-  with open(sys.argv[1], 'rb') as iso:
-    sector1 = iso.read(core.SECTOR)
-    num_unenc_sectors = int.from_bytes(sector1[0:4], core.ORDER)
-    unknown = sector1[4:8]
-    regions = []
-    encrypted = False
-    # TODO: I think I have a bug, these start and end addresses should be multiplied by 8?
-    for i in range(0, (num_unenc_sectors*2)-1 ):
-      regions.append({'start': sector1[8+4*i:12+4*i], 'end': sector1[12+4*i:16+4*i], 'enc': encrypted})
-      encrypted = not encrypted
-
-    regions.append({'start': regions[-1]['end'], 'end': size_hex, 'enc': True})    
-    print(regions)
-    # data1 from ird: 44 4901 0800 0020 0042 444f 0111 0101 00
-    # TODO: import .ird (which can either be plaintext starting with 3IRD or .gz)
-    
-
-    print(disc_key)
-
-    with open('output.iso', 'wb') as output:
-      for region in regions:
-        start = int(region["start"].hex(), 16)*2048
-        end = int(region["end"].hex(), 16)*2048
-        #start = int.from_bytes(region["start"], core.ORDER)*8
-        #end = int.from_bytes(region["end"], core.ORDER)*8
-        print(region)
-        print('start: ', start)
-        print('end: ', end)
-        print('size: ', end - start - 1)
-        if region['enc']:
-          
-          num = end
-          print(num)
-          iv = ['' for i in range(0,16)]
-          for j in range(0,16):
-            iv[16 - j - 1] = hex(ord(struct.pack("B", num & 0xFF))).replace('0x','')
-            num >>= 8
-    
-          iv = "".join(iv)[-16:]
   
-          iso.seek(start)
-          data = iso.read(end - start - 1)
-          print(len(data))
-          cipher = AES.new(disc_key, AES.MODE_CBC, iv)
-          output.write(cipher.decrypt(data))
-          continue
-
-        iso.seek(start)
-        data = iso.read(end - start - 1)
-        print(len(data))
-        output.write(data)
-  
-    
-    
-
-
-
-
