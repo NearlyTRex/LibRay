@@ -45,14 +45,24 @@ class ISO:
 
       self.regions = self.read_regions(input_iso, args.iso)
 
+      input_iso.seek(core.SECTOR)
+      playstation = input_iso.read(16)
+      self.game_id = input_iso.read(16).decode('utf8').strip()
+
     if args.verbose:
       self.print_info()
+
+    if not args.ird:
+      core.warning('No IRD file specified, downloading required file')
+      args.ird = core.ird_by_game_id(self.game_id) # Download ird
 
     self.ird = ird.IRD(args)
 
     if self.ird.region_count != len(self.regions)-1:
-      core.error('ISO corrupted. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)-1))
-      sys.exit()
+      core.error('Corrupt ISO. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)-1))
+
+    if self.regions[-1]['start'] > self.size:
+      core.error('Corrupt ISO. Expected filesize larger than %.2f GiB, actual size is %.2f GiB' % (self.regions[-1]['start'] / 1024**3, self.size / 1024**3 ) )
 
     cipher = AES.new(core.ISO_SECRET, AES.MODE_CBC, core.ISO_IV)
     self.disc_key = cipher.encrypt(self.ird.data1)
@@ -65,7 +75,7 @@ class ISO:
     with open(args.iso, 'rb') as input_iso:
       with open(args.output, 'wb') as output_iso:
 
-        pbar = tqdm(total=self.size)
+        pbar = tqdm(total= (self.size // 2048) - 4 )
       
         for i, region in enumerate(self.regions):
           input_iso.seek(region['start'])
@@ -73,7 +83,10 @@ class ISO:
           if not region['enc']:
             while input_iso.tell() < region['end']:
               data = input_iso.read(core.SECTOR)
-              pbar.update(core.SECTOR)
+              if not data:
+                core.warning("Trying to read past the end of the file")
+                break
+              pbar.update(1)
               output_iso.write(data)
             continue
           else:
@@ -85,7 +98,10 @@ class ISO:
                 num >>= 8
             
               data = input_iso.read(core.SECTOR)
-              pbar.update(core.SECTOR)
+              if not data:
+                core.warning("Trying to read past the end of the file")
+                break
+              pbar.update(1)
              
               cipher = AES.new(self.disc_key, AES.MODE_CBC, bytes(iv))
               decrypted = cipher.decrypt(data)
