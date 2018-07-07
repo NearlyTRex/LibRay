@@ -18,6 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with libray.  If not, see <https://www.gnu.org/licenses/>.
 
+
+import sys
+from tqdm import tqdm
 from Crypto.Cipher import AES
 
 try:
@@ -36,6 +39,7 @@ class ISO:
 
   def __init__(self, args):
     with open(args.iso, 'rb') as input_iso:
+      self.size = core.filesize(args.iso)
       self.number_of_regions = core.to_int(input_iso.read(self.NUM_INFO_BYTES))
       unused_bytes = input_iso.read(self.NUM_INFO_BYTES) # Yeah, I don't know either.
 
@@ -45,6 +49,10 @@ class ISO:
       self.print_info()
 
     self.ird = ird.IRD(args)
+
+    if self.ird.region_count != len(self.regions)-1:
+      core.error('ISO corrupted. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)-1))
+      sys.exit()
 
     cipher = AES.new(core.ISO_SECRET, AES.MODE_CBC, core.ISO_IV)
     self.disc_key = cipher.encrypt(self.ird.data1)
@@ -56,12 +64,16 @@ class ISO:
 
     with open(args.iso, 'rb') as input_iso:
       with open(args.output, 'wb') as output_iso:
+
+        pbar = tqdm(total=self.size)
+      
         for i, region in enumerate(self.regions):
           input_iso.seek(region['start'])
 
           if not region['enc']:
             while input_iso.tell() < region['end']:
               data = input_iso.read(core.SECTOR)
+              pbar.update(core.SECTOR)
               output_iso.write(data)
             continue
           else:
@@ -73,12 +85,14 @@ class ISO:
                 num >>= 8
             
               data = input_iso.read(core.SECTOR)
+              pbar.update(core.SECTOR)
              
               cipher = AES.new(self.disc_key, AES.MODE_CBC, bytes(iv))
               decrypted = cipher.decrypt(data)
             
               output_iso.write(decrypted)
-
+              
+          pbar.close()
 
   def read_regions(self, input_iso, filename):
     regions = []
@@ -92,7 +106,7 @@ class ISO:
       })
       input_iso.seek(input_iso.tell() - self.NUM_INFO_BYTES)
       encrypted = not encrypted
-    regions[-1]['end'] = core.filesize(filename)
+    regions[-1]['end'] = self.size
 
     return regions
 

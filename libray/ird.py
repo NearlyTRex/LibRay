@@ -20,7 +20,7 @@
 
 import os
 import sys
-import gzip
+import zlib
 import shutil
 
 try:
@@ -110,13 +110,13 @@ class IRD:
     with open(filename, 'rb') as input_ird: 
       if input_ird.read(4) != self.MAGIC_STRING:
         uncompress = True
-    
+
     if uncompress:
-      with gzip.open(filename, 'rb') as gzfile:
+      with open(filename, 'rb') as gzfile:
         with open(self.TEMP_FILE, 'wb') as tmpfile:
-          tmpfile.write(gzfile.read())
-    
-    shutil.copyfile(filename, self.TEMP_FILE)
+          tmpfile.write(zlib.decompress(gzfile.read(), zlib.MAX_WBITS|16))
+    else:
+      shutil.copyfile(filename, self.TEMP_FILE)
 
   
 
