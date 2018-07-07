@@ -110,13 +110,13 @@ class IRD:
     with open(filename, 'rb') as input_ird: 
       if input_ird.read(4) != self.MAGIC_STRING:
         uncompress = True
-        
+    
     if uncompress:
       with gzip.open(filename, 'rb') as gzfile:
         with open(self.TEMP_FILE, 'wb') as tmpfile:
           tmpfile.write(gzfile.read())
-    else:
-      shutil.copyfile(filename, self.TEMP_FILE)
+    
+    shutil.copyfile(filename, self.TEMP_FILE)
 
   
 

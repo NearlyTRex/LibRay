@@ -12,5 +12,9 @@ setup(
   url="https://notabug.org/necklace/libray",
   packages=['libray'],
   scripts=['libray/libray'],
-  install_requires=['pycrypto==2.6.1'],
+  install_requires=[
+    'pycrypto==2.6.1', 
+    'requests==2.19.1', 
+    'beautifulsoup4==4.6.0' 
+  ],
 )
