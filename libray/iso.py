@@ -25,10 +25,8 @@ from Crypto.Cipher import AES
 
 try:
   from libray import core
-  from libray import ird
 except ImportError:
   import core
-  import ird
 
 
 class ISO:
@@ -45,6 +43,10 @@ class ISO:
 
       self.regions = self.read_regions(input_iso, args.iso)
 
+      input_iso.seek(3968)
+      self.data1 = input_iso.read(16)
+
+
       input_iso.seek(core.SECTOR)
       playstation = input_iso.read(16)
       self.game_id = input_iso.read(16).decode('utf8').strip()
@@ -52,20 +54,11 @@ class ISO:
     if args.verbose:
       self.print_info()
 
-    if not args.ird:
-      core.warning('No IRD file specified, downloading required file')
-      args.ird = core.ird_by_game_id(self.game_id) # Download ird
-
-    self.ird = ird.IRD(args)
-
-    if self.ird.region_count != len(self.regions)-1:
-      core.error('Corrupt ISO. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)-1))
-
     if self.regions[-1]['start'] > self.size:
       core.error('Corrupt ISO. Expected filesize larger than %.2f GiB, actual size is %.2f GiB' % (self.regions[-1]['start'] / 1024**3, self.size / 1024**3 ) )
 
     cipher = AES.new(core.ISO_SECRET, AES.MODE_CBC, core.ISO_IV)
-    self.disc_key = cipher.encrypt(self.ird.data1)
+    self.disc_key = cipher.encrypt(self.data1)
 
 
   def decrypt(self, args):
