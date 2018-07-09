@@ -21,6 +21,8 @@
 import os
 import sys
 import shutil
+import requests
+from bs4 import BeautifulSoup
 
 
 try:
@@ -31,6 +33,8 @@ except ImportError:
 # Magic numbers / Constant variables
 
 SECTOR = 2048
+ALL_IRD_NET_LOC = 'http://jonnysp.bplaced.net/data.php'
+GET_IRD_NET_LOC = 'http://jonnysp.bplaced.net/ird/'
 
 # Utility functions
 
@@ -75,6 +79,35 @@ def error(msg):
 
 def warning(msg):
   print('WARNING: %s. Continuing regardless' % msg)
+
+
+def download_ird(ird_name):
+  ird_link = GET_IRD_NET_LOC + ird_name
+  r = requests.get(ird_link, stream=True)
+
+  with open(ird_name, 'wb') as ird_file:
+    r.raw.decode_content = True
+    shutil.copyfileobj(r.raw, ird_file)
+
+
+def ird_by_game_id(game_id):
+  gameid = game_id.replace('-','')
+  r = requests.get(ALL_IRD_NET_LOC, headers = {'User-Agent': 'Anonymous (You)' }, timeout=5)
+  soup = BeautifulSoup(r.text, "html.parser")
+
+  ird_name = False
+  for elem in soup.find_all("a"):
+    url = elem.get('href').split('/')[-1].replace('\\"','')
+    if gameid in url:
+      ird_name = url
+
+  if not ird_name:
+    error("Unable to download IRD, couldn't find link")  
+
+  download_ird(ird_name)
+
+  return(ird_name)
+  
 
 # Main functions
 
