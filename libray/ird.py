@@ -2,19 +2,19 @@
 
 # libray - Libre Blu-Ray PS3 ISO Tool
 # Copyright (C) 2018 Nichlas Severinsen
-# 
+#
 # This file is part of libray.
-# 
+#
 # libray is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # libray is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with libray.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -37,9 +37,9 @@ class IRD:
   TEMP_FILE = 'ird'
   MAGIC_STRING = b"3IRD"
 
-  
+
   def __init__(self, args):
-  
+
     self.uncompress(args.ird) # TODO: Try/Except
 
     self.size = core.filesize(self.TEMP_FILE)
@@ -57,12 +57,12 @@ class IRD:
 
       if self.version == 7:
         self.identifier = input_ird.read(4)
-      
+
       header_length = (core.to_int(input_ird.read(4), self.ORDER))
       self.header = input_ird.read(header_length)
       footer_length = (core.to_int(input_ird.read(4), self.ORDER))
       self.footer = input_ird.read(footer_length)
-      
+
       self.region_count = core.to_int(input_ird.read(1), self.ORDER)
       self.region_hashes = []
       for i in range(0, self.region_count):
@@ -77,7 +77,7 @@ class IRD:
 
       if self.version >= 9:
         self.pic = input_ird.read(115)
-      
+
       unused_bytes = input_ird.read(4) # Yeah, I don't know either.
 
       self.data1 = input_ird.read(16)
@@ -91,24 +91,24 @@ class IRD:
 
       if args.verbose:
         self.print_info()
-    
+
     os.remove(self.TEMP_FILE)
 
-  
+
   def get_if_exists(self, input_ird):
     starting_address = input_ird.tell()
     length = core.read_seven_bit_encoded_int(input_ird, self.ORDER)
     print(length)
     if length:
       return input_ird.read(length)
-    
+
     input_ird.seek(starting_address)
     return None
-  
+
 
   def uncompress(self, filename):
     uncompress = False
-    with open(filename, 'rb') as input_ird: 
+    with open(filename, 'rb') as input_ird:
       if input_ird.read(4) != self.MAGIC_STRING:
         uncompress = True
 
@@ -119,7 +119,7 @@ class IRD:
     else:
       shutil.copyfile(filename, self.TEMP_FILE)
 
-  
+
 
   def print_info(self):
     print('Info from IRD:')

@@ -2,19 +2,19 @@
 
 # libray - Libre Blu-Ray PS3 ISO Tool
 # Copyright (C) 2018 Nichlas Severinsen
-# 
+#
 # This file is part of libray.
-# 
+#
 # libray is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # libray is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with libray.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -33,7 +33,7 @@ except ImportError:
 
 class ISO:
 
-  
+
   NUM_INFO_BYTES = 4
 
 
@@ -76,7 +76,7 @@ class ISO:
       with open(args.output, 'wb') as output_iso:
 
         pbar = tqdm(total= (self.size // 2048) - 4 )
-      
+
         for i, region in enumerate(self.regions):
           input_iso.seek(region['start'])
 
@@ -96,28 +96,28 @@ class ISO:
               for j in range(0,16):
                 iv[16 - j - 1] = (num & 0xFF)
                 num >>= 8
-            
+
               data = input_iso.read(core.SECTOR)
               if not data:
                 core.warning("Trying to read past the end of the file")
                 break
               pbar.update(1)
-             
+
               cipher = AES.new(self.disc_key, AES.MODE_CBC, bytes(iv))
               decrypted = cipher.decrypt(data)
-            
+
               output_iso.write(decrypted)
-              
+
           pbar.close()
 
   def read_regions(self, input_iso, filename):
     regions = []
-    
+
     encrypted = False
     for i in range(0, self.number_of_regions*2):
       regions.append({
-        'start': core.to_int(input_iso.read(self.NUM_INFO_BYTES))*core.SECTOR, 
-        'end': core.to_int(input_iso.read(self.NUM_INFO_BYTES))*core.SECTOR, 
+        'start': core.to_int(input_iso.read(self.NUM_INFO_BYTES))*core.SECTOR,
+        'end': core.to_int(input_iso.read(self.NUM_INFO_BYTES))*core.SECTOR,
         'enc': encrypted
       })
       input_iso.seek(input_iso.tell() - self.NUM_INFO_BYTES)
@@ -133,4 +133,3 @@ class ISO:
     for i, region in enumerate(self.regions):
       print(i, region)
 
-    

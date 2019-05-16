@@ -14,8 +14,8 @@ setup(
   scripts=['libray/libray'],
   install_requires=[
     'tqdm==4.23.4',
-    'pycrypto==2.6.1', 
-    'requests==2.19.1', 
+    'pycrypto==2.6.1',
+    'requests==2.19.1',
     'beautifulsoup4==4.6.0',
   ],
 )

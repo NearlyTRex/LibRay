@@ -1,0 +1,9 @@
+libraries:
+- name: pycrypto
+  version: "2.6.1"
+- name: tqdm
+  version: "4.23.4"
+- name: requests
+  version: "2.19.1"
+- name: beautifulsoup4
+  version: "4.6.0"
