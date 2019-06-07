@@ -24,6 +24,7 @@ import sys
 import zlib
 import shutil
 
+
 try:
   from libray import core
 except ImportError:
@@ -31,7 +32,19 @@ except ImportError:
 
 
 class IRD:
+  """Class for handling .ird files
 
+  Attributes:
+    version: IRD version number
+    game_id: PS3 game identifier
+    game_name: Name of PS3 game
+    update_version: PS3 firmware update version
+    game_version: PS3 game version
+    app_version: PS3 app version
+    region_count: How many encrypted regions are in the .iso
+    file_count: How many files are supposed to be in the .iso
+    data1: Encryption key
+  """
 
   ORDER = 'little'
   TEMP_FILE = 'ird'
@@ -39,8 +52,9 @@ class IRD:
 
 
   def __init__(self, args):
+    """IRD constructor using args from argparse"""
 
-    self.uncompress(args.ird) # TODO: Try/Except
+    self.uncompress(args.ird) # TODO: Try/Except?
 
     self.size = core.filesize(self.TEMP_FILE)
     with open(self.TEMP_FILE, 'rb') as input_ird:
@@ -95,18 +109,9 @@ class IRD:
     os.remove(self.TEMP_FILE)
 
 
-  def get_if_exists(self, input_ird):
-    starting_address = input_ird.tell()
-    length = core.read_seven_bit_encoded_int(input_ird, self.ORDER)
-    print(length)
-    if length:
-      return input_ird.read(length)
-
-    input_ird.seek(starting_address)
-    return None
-
-
   def uncompress(self, filename):
+    """Uncompress IRD. Assumes given .ird file is not compressed, but then tries to decompress it with zlib/gzfile if it was not uncompressed"""
+
     uncompress = False
     with open(filename, 'rb') as input_ird:
       if input_ird.read(4) != self.MAGIC_STRING:
@@ -120,8 +125,10 @@ class IRD:
       shutil.copyfile(filename, self.TEMP_FILE)
 
 
-
   def print_info(self):
+    # TODO: This could probably have been a __str__? Who cares?
+    """Print some info about the IRD"""
+
     print('Info from IRD:')
     print('Version: %s' % self.version)
     print('Game ID: %s' % self.game_id)

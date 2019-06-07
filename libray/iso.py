@@ -23,6 +23,7 @@ import sys
 from tqdm import tqdm
 from Crypto.Cipher import AES
 
+
 try:
   from libray import core
   from libray import ird
@@ -32,12 +33,23 @@ except ImportError:
 
 
 class ISO:
-
+  """Class for handling PS3 .iso files
+  
+  Attributes:
+  size: Size of .iso in bytes
+  number_of_regions: Number of regions in the .iso
+  regions: List with info of every region
+  game_id: PS3 game id
+  ird: IRD object (see ird.py)
+  disc_key: data1 from .ird, encrypted
+  """
 
   NUM_INFO_BYTES = 4
 
 
   def __init__(self, args):
+    """ISO constructor using args from argparse"""
+
     with open(args.iso, 'rb') as input_iso:
       self.size = core.filesize(args.iso)
       self.number_of_regions = core.to_int(input_iso.read(self.NUM_INFO_BYTES))
@@ -69,6 +81,7 @@ class ISO:
 
 
   def decrypt(self, args):
+    """Decrypt self using args from argparse"""
 
     print('Decrypting with disc key: %s' % self.disc_key.hex())
 
@@ -110,7 +123,9 @@ class ISO:
 
           pbar.close()
 
+
   def read_regions(self, input_iso, filename):
+    """List with information (start, end, whether it's encrypted) for every region"""
     regions = []
 
     encrypted = False
@@ -128,6 +143,9 @@ class ISO:
 
 
   def print_info(self):
+    # TODO: This could probably have been a __str__? Who cares?
+    """Print some info about the ISO"""
+
     print('Info from ISO:')
     print('Regions: %s (%s)' % (self.number_of_regions, self.number_of_regions*2) )
     for i, region in enumerate(self.regions):

@@ -7,6 +7,8 @@ extracting, repackaging, and encrypting PS3 ISOs.
 
 A hackable, crossplatform, alternative to ISOTools and ISO-Rebuilder.
 
+**Note: this is still a very beta project, report any bug you see!**
+
 ## How to install
 
 1. Clone this repository ```git clone https://notabug.org/necklace/libray```
@@ -85,15 +87,9 @@ clp = compressed length prefix
 
 ## Todo
 
-- Automatically download .ird file if not given
 - Docstrings
 - Extract ISO (currently doable with `7z x output.iso`
+- Repackage (unextract) and reencrypt iso?
 - Test .irds with version < 9
 - Custom command to backup all irds available
 - pypi
-
-## Advanced
-
-Figure out the SCSI commands to get data1, if at all possible.
-
-

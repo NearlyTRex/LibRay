@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with libray.  If not, see <https://www.gnu.org/licenses/>.
 
+
 import os
 import sys
 import shutil
@@ -38,12 +39,15 @@ GET_IRD_NET_LOC = 'http://jonnysp.bplaced.net/ird/'
 
 # Utility functions
 
-def to_int(data, order='big'):
+
+def to_int(data, byteorder='big'):
+  """Convert bytes to integer"""
   if isinstance(data, bytes):
-    return int.from_bytes(data, order)
+    return int.from_bytes(data, byteorder)
 
 
 def to_bytes(data):
+  """Convert a string of HEX to bytes"""
   if isinstance(data, str):
     return bytes(bytearray.fromhex(data))
 
@@ -53,12 +57,13 @@ ISO_IV = to_bytes("69474772af6fdab342743aefaa186287")
 
 
 def filesize(filename):
+  """Get size of a file in bytes from os.stat"""
   return os.stat(filename).st_size
 
 
 def read_seven_bit_encoded_int(fileobj, order):
-  # Read out an Int32 7 bits at a time. The high bit
-  # of the byte when on means to continue reading more bytes
+  """Read an Int32, 7 bits at a time."""
+  # The highest bit of the byte when on, means to continue reading more bytes.
   count = 0
   shift = 0
   byte = -1
@@ -73,15 +78,18 @@ def read_seven_bit_encoded_int(fileobj, order):
 
 
 def error(msg):
+  """Print fatal error message and terminate"""
   print('ERROR: %s' % msg)
   sys.exit(1)
 
 
 def warning(msg):
+  """Print a warning message"""
   print('WARNING: %s. Continuing regardless' % msg)
 
 
 def download_ird(ird_name):
+  """Download an .ird from GET_IRD_NET_LOC"""
   ird_link = GET_IRD_NET_LOC + ird_name
   r = requests.get(ird_link, stream=True)
 
@@ -91,6 +99,7 @@ def download_ird(ird_name):
 
 
 def ird_by_game_id(game_id):
+  """Using a game_id, download the responding .ird from ALL_IRD_NET_LOC"""
   gameid = game_id.replace('-','')
   r = requests.get(ALL_IRD_NET_LOC, headers = {'User-Agent': 'Anonymous (You)' }, timeout=5)
   soup = BeautifulSoup(r.text, "html.parser")
@@ -113,6 +122,10 @@ def ird_by_game_id(game_id):
 
 
 def decrypt(args):
+  """Try to decrypt a given .iso using relevant .ird using args from argparse
+  
+  If no .ird is given this will try to automatically download an .ird file with the encryption/decryption key for the given game .iso
+  """
 
   input_iso = iso.ISO(args)
 
