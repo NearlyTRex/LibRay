@@ -11,15 +11,33 @@ A hackable, crossplatform, alternative to ISOTools and ISO-Rebuilder.
 
 ## How to install
 
+Note: You will need Python 3, so you might want to use `python3` and `pip3` instead of `python` and `pip` depending on your system.
+
+### From PyPi:
+
+1. `sudo pip install libray`
+
+### Manually:
+
 1. Clone this repository ```git clone https://notabug.org/necklace/libray```
 
 2. Install dependencies with ```sudo pip install -r requirements.txt```
 
 3. Run ```sudo python setup.py install```
 
-Note: You will need Python 3, so you might want to use `python3` and `pip3`.
+### From AUR:
 
-`libray` is now installed to your path. In the future I'll add this package to pypi.
+For Arch or Arch-based GNU/Linux distributions there's an option to [install libray from the AUR](https://aur.archlinux.org/packages/libray-git/) (Arch User Repository).
+
+You will need an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers) (of which there are many). 
+
+Then you will need to run the appropriate install command for that AUR helper using `libray-git` as package name.
+
+This will essentially automatically do the manual method for you.
+
+### Done!
+
+`libray` is now installed to your path.
 
 ## How do I use it?
 
