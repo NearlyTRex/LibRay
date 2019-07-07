@@ -2,7 +2,7 @@
 
 LibRay: A portmanteau of Libre and Blu-Ray
 
-LibRay aims to be a Libre (FLOSS) Python application for unencrypting, 
+LibRay aims to be a Libre (FLOSS) Python application for unencrypting,
 extracting, repackaging, and encrypting PS3 ISOs.
 
 A hackable, crossplatform, alternative to ISOTools and ISO-Rebuilder.
@@ -29,7 +29,7 @@ Note: You will need Python 3, so you might want to use `python3` and `pip3` inst
 
 For Arch or Arch-based GNU/Linux distributions there's an option to [install libray from the AUR](https://aur.archlinux.org/packages/libray-git/) (Arch User Repository).
 
-You will need an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers) (of which there are many). 
+You will need an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers) (of which there are many).
 
 Then you will need to run the appropriate install command for that AUR helper using `libray-git` as package name.
 
@@ -78,7 +78,9 @@ Then, if you want to feed it into RPCS3 just extract the contents of the .ISO:
 7z x nfs_ps3_decrypted.iso
 ```
 
-And move the resulting folders into the appropriate folder for RPCS3.
+And move the resulting folders into the appropriate folder for RPCS3:
+
+- Linux: /home/username/.config/rpcs3/dev_hdd0/disc/
 
 ## License
 
@@ -86,7 +88,7 @@ This project is Free and Open Source Software; FOSS, licensed under the GNU Gene
 
 ## Error!
 
-Help! I get 
+Help! I get
 
 > ImportError: No module named Crypto.Cipher
 
@@ -104,7 +106,7 @@ sudo pip install pycrypto
 
 ## Development
 
-[see also](http://www.psdevwiki.com/ps3/Bluray_disc#Encryption) ([archive.fo](https://archive.fo/hN1E6)) 
+[see also](http://www.psdevwiki.com/ps3/Bluray_disc#Encryption) ([archive.fo](https://archive.fo/hN1E6))
 
 [7bit encoded int / RLE / CLP](https://github.com/Microsoft/referencesource/blob/master/mscorlib/system/io/binaryreader.cs#L582-L600)
 
@@ -112,9 +114,9 @@ clp = compressed length prefix
 
 ## Todo
 
-- Docstrings
 - Extract ISO (currently doable with `7z x output.iso`
 - Repackage (unextract) and reencrypt iso?
 - Test .irds with version < 9
 - Custom command to backup all irds available
-- pypi
+- Unit tests
+

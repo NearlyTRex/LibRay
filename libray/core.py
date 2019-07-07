@@ -21,6 +21,7 @@
 
 import os
 import sys
+import stat
 import shutil
 import requests
 from bs4 import BeautifulSoup
@@ -56,12 +57,18 @@ ISO_SECRET = to_bytes("380bcf0b53455b3c7817ab4fa3ba90ed")
 ISO_IV = to_bytes("69474772af6fdab342743aefaa186287")
 
 
-def filesize(filename):
-  """Get size of a file in bytes from os.stat"""
-  try:
-    return open(filename, "rb").seek(0, 2)
-  except:
-    return os.stat(filename).st_size
+def size(path):
+  """Get size of a file or block device in bytes"""
+  pathstat = os.stat(path)
+
+  # Check if it's a block device
+
+  if stat.S_ISBLK(pathstat.st_mode):
+    return open(path, 'rb').seek(0, os.SEEK_END)
+
+  # Otherwise, it's hopefully file
+
+  return pathstat.st_size
 
 
 def read_seven_bit_encoded_int(fileobj, order):
@@ -126,7 +133,7 @@ def ird_by_game_id(game_id):
 
 def decrypt(args):
   """Try to decrypt a given .iso using relevant .ird using args from argparse
-  
+
   If no .ird is given this will try to automatically download an .ird file with the encryption/decryption key for the given game .iso
   """
 

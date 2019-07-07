@@ -34,7 +34,7 @@ except ImportError:
 
 class ISO:
   """Class for handling PS3 .iso files
-  
+
   Attributes:
   size: Size of .iso in bytes
   number_of_regions: Number of regions in the .iso
@@ -50,8 +50,12 @@ class ISO:
   def __init__(self, args):
     """ISO constructor using args from argparse"""
 
+    self.size = core.size(args.iso)
+
+    if not self.size:
+      core.error('looks like ISO file/mount is empty?')
+
     with open(args.iso, 'rb') as input_iso:
-      self.size = core.filesize(args.iso)
       self.number_of_regions = core.to_int(input_iso.read(self.NUM_INFO_BYTES))
       unused_bytes = input_iso.read(self.NUM_INFO_BYTES) # Yeah, I don't know either.
 
@@ -97,7 +101,7 @@ class ISO:
             while input_iso.tell() < region['end']:
               data = input_iso.read(core.SECTOR)
               if not data:
-                core.warning("Trying to read past the end of the file")
+                core.warning('Trying to read past the end of the file')
                 break
               pbar.update(1)
               output_iso.write(data)
@@ -112,7 +116,7 @@ class ISO:
 
               data = input_iso.read(core.SECTOR)
               if not data:
-                core.warning("Trying to read past the end of the file")
+                core.warning('Trying to read past the end of the file')
                 break
               pbar.update(1)
 

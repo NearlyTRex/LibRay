@@ -48,7 +48,7 @@ class IRD:
 
   ORDER = 'little'
   TEMP_FILE = 'ird'
-  MAGIC_STRING = b"3IRD"
+  MAGIC_STRING = b'3IRD'
 
 
   def __init__(self, args):
@@ -56,10 +56,14 @@ class IRD:
 
     self.uncompress(args.ird) # TODO: Try/Except?
 
-    self.size = core.filesize(self.TEMP_FILE)
+    self.size = core.size(self.TEMP_FILE)
+
+    if not self.size:
+      core.error('IRD file is empty!')
+
     with open(self.TEMP_FILE, 'rb') as input_ird:
       if input_ird.read(4) != self.MAGIC_STRING:
-        core.error("Either not an IRD file, corruped IRD file, or unknown IRD format")
+        core.error('Either not an IRD file, corruped IRD file, or unknown IRD format')
 
       self.version = core.to_int(input_ird.read(1), self.ORDER)
       self.game_id = input_ird.read(9)
