@@ -56,10 +56,17 @@ required arguments:
   -i ISO, --iso ISO     Path to .iso file
 ```
 
-Rip a PS3 to .ISO with an appropriate blu-ray drive: https://rpcs3.net/quickstart (see "Compatible Blu-ray disc drives section"). 
-Then just feed the .ISO to libray which will try to download an IRD decryption file for your iso. 
+You need to use an appropriate blu-ray drive: https://rpcs3.net/quickstart (see "Compatible Blu-ray disc drives section").
 
-Example:
+On some systems (eg. Linux), you can decrypt directly from the disc.
+
+```
+libray -i /dev/sr0 -o ps3_game_decrypted.iso
+```
+
+Libray will try to download an IRD decryption file for your iso:
+
+Alternatively, you can first rip the disc to an ISO file and then decrypt from the ISO file:
 
 ```
 libray -i ps3_game.iso -o ps3_game_decrypted.iso

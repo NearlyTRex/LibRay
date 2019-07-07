@@ -58,7 +58,10 @@ ISO_IV = to_bytes("69474772af6fdab342743aefaa186287")
 
 def filesize(filename):
   """Get size of a file in bytes from os.stat"""
-  return os.stat(filename).st_size
+  try:
+    return open(filename, "rb").seek(0, 2)
+  except:
+    return os.stat(filename).st_size
 
 
 def read_seven_bit_encoded_int(fileobj, order):
