@@ -41,6 +41,10 @@ This will essentially automatically do the manual method for you.
 
 ## How do I use it?
 
+First off, even before you install libray, you will need a compatible Blu-Ray drive that can read PS3 discs.
+
+There's a compiled list of compatible drives here: [https://rpcs3.net/quickstart](https://rpcs3.net/quickstart) ([archive](https://web.archive.org/web/20190801060739/https://rpcs3.net/quickstart]))
+
 ```
 A Libre (FLOSS) Python application for unencrypting, extracting, repackaging,
 and encrypting PS3 ISOs
@@ -64,7 +68,11 @@ On some systems (eg. Linux), you can decrypt directly from the disc.
 libray -i /dev/sr0 -o ps3_game_decrypted.iso
 ```
 
-Libray will try to download an IRD decryption file for your iso:
+Libray will automatically try to download an IRD decryption file for your iso. If you don't have internet connection, but you do have an .ird file you can specify that:
+
+```
+libray -i /dev/sr0 -k game_ird_file.ird -o ps3_game_decrypted.iso
+```
 
 Alternatively, you can first rip the disc to an ISO file and then decrypt from the ISO file:
 
@@ -84,7 +92,7 @@ And move the resulting folders into the appropriate folder for RPCS3:
 
 ## License
 
-This project is Free and Open Source Software; FOSS, licensed under the GNU General Public License version 3. GPLv3.
+This project is Free, Libre, and Open Source Software; FLOSS, licensed under the GNU General Public License version 3. GPLv3.
 
 ## Error!
 
