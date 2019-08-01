@@ -90,7 +90,13 @@ class ISO:
     print('Decrypting with disc key: %s' % self.disc_key.hex())
 
     with open(args.iso, 'rb') as input_iso:
-      with open(args.output, 'wb') as output_iso:
+      
+      if not args.output:
+        output_name = '%s.iso' % self.game_id
+      else:
+        output_name = args.output
+
+      with open(output_name, 'wb') as output_iso:
 
         pbar = tqdm(total= (self.size // 2048) - 4 )
 

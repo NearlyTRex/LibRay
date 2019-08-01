@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+### Changed
+- Default output iso name is game_id.iso instead of output.iso
+
 ## [0.0.2] - 2019-07-07
 ### Added/Fixed
 - Decrypting block devices directly (eg. cd/dvd/bd drive) instead of .iso files. For example `-i /dev/sg0` or `-i /dev/sr0`.
