@@ -94,6 +94,10 @@ And move the resulting folders into the appropriate folder for RPCS3:
 
 This project is Free, Libre, and Open Source Software; FLOSS, licensed under the GNU General Public License version 3. GPLv3.
 
+See also COPYING or LICENSE.txt
+
+Copyright © 2018 - 2019 Nichlas Severinsen
+
 ## Error!
 
 Help! I get
