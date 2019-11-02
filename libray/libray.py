@@ -33,11 +33,13 @@ if __name__ == '__main__':
 
   # Parse command line arguments with argpase
   parser = argparse.ArgumentParser(description='A Libre (FLOSS) Python application for unencrypting, extracting, repackaging, and encrypting PS3 ISOs')
-  parser.add_argument('-v', '--verbose', help='Increase verbosity', action='count')
-  parser.add_argument('-o', '--output', dest='output', type=str, help='Output filename', default='')
-  parser.add_argument('-k', '--ird', dest='ird', type=str, help='Path to .ird file', default='')
+  parser._action_groups.pop()
   required = parser.add_argument_group('required arguments')
-  required.add_argument('-i', '--iso', dest='iso', type=str, help='Path to .iso file', required=True)
+  optional = parser.add_argument_group('optional arguments')
+  required.add_argument('-i', '--iso', dest='iso', type=str, help='Path to .iso file or stream', required=True)
+  optional.add_argument('-o', '--output', dest='output', type=str, help='Output filename', default='')
+  optional.add_argument('-k', '--ird', dest='ird', type=str, help='Path to .ird file', default='')
+  optional.add_argument('-v', '--verbose', help='Increase verbosity', action='count')
   args = parser.parse_args()
 
   core.decrypt(args)

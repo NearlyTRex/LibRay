@@ -41,26 +41,27 @@ This will essentially automatically do the manual method for you.
 
 ## How do I use it?
 
-First off, even before you install libray, you will need a compatible Blu-Ray drive that can read PS3 discs.
-
-There's a compiled list of compatible drives here: [https://rpcs3.net/quickstart](https://rpcs3.net/quickstart) ([archive](https://web.archive.org/web/20190801060739/https://rpcs3.net/quickstart]))
-
 ```
+usage: libray [-h] -i ISO [-o OUTPUT] [-k IRD] [-v]
+
 A Libre (FLOSS) Python application for unencrypting, extracting, repackaging,
 and encrypting PS3 ISOs
 
+required arguments:
+  -i ISO, --iso ISO     Path to .iso file or stream
+
 optional arguments:
-  -h, --help            show this help message and exit
-  -v, --verbose         Increase verbosity
   -o OUTPUT, --output OUTPUT
                         Output filename
   -k IRD, --ird IRD     Path to .ird file
+  -v, --verbose         Increase verbosity
 
-required arguments:
-  -i ISO, --iso ISO     Path to .iso file
 ```
 
-You need to use an appropriate blu-ray drive: https://rpcs3.net/quickstart (see "Compatible Blu-ray disc drives section").
+First off, even before you install libray, you will need a compatible Blu-Ray drive that can read PS3 discs.
+
+There's a compiled list of compatible drives here: [https://rpcs3.net/quickstart](https://rpcs3.net/quickstart) ([archive](https://web.archive.org/web/20190801060739/https://rpcs3.net/quickstart])) (see "Compatible Blu-ray disc drives section").
+
 
 On some systems (eg. Linux), you can decrypt directly from the disc.
 
@@ -116,11 +117,13 @@ sudo pip uninstall pycrypto
 sudo pip install pycrypto
 ```
 
+If you get any other errors, or have any other problem with libray, please [create an issue](https://notabug.org/necklace/libray/issues/new)!
+
 ## Development
 
 [see also](http://www.psdevwiki.com/ps3/Bluray_disc#Encryption) ([archive.fo](https://archive.fo/hN1E6))
 
-[7bit encoded int / RLE / CLP](https://github.com/Microsoft/referencesource/blob/master/mscorlib/system/io/binaryreader.cs#L582-L600)
+[7bit encoded int / RLE / CLP](https://github.com/microsoft/referencesource/blob/1acafe20a789a55daa17aac6bb47d1b0ec04519f/mscorlib/system/io/binaryreader.cs#L582-L600)
 
 clp = compressed length prefix
 
