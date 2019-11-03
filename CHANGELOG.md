@@ -6,10 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Changed
 - Default output iso name is game_id.iso instead of output.iso
+- Added quiet mode, enabled with the -q or --quiet flag argument
+- Added the ability to manually specify decryption key with -d or --decryption-key
 
 ## [0.0.2] - 2019-07-07
 ### Added/Fixed
-- Decrypting block devices directly (eg. cd/dvd/bd drive) instead of .iso files. For example `-i /dev/sg0` or `-i /dev/sr0`.
+- Decrypting block devices directly (eg. cd/dvd/bd drive) instead of .iso files. For example `-i /dev/sg0` or `-i /dev/sr0`
 
 ## [0.0.1] - 2019-05-16
 ### Added

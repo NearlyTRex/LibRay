@@ -42,7 +42,7 @@ This will essentially automatically do the manual method for you.
 ## How do I use it?
 
 ```
-usage: libray [-h] -i ISO [-o OUTPUT] [-k IRD] [-v]
+usage: libray [-h] -i ISO [-o OUTPUT] [-k IRD] [-d DECRYPTION_KEY] [-v] [-q]
 
 A Libre (FLOSS) Python application for unencrypting, extracting, repackaging,
 and encrypting PS3 ISOs
@@ -54,8 +54,10 @@ optional arguments:
   -o OUTPUT, --output OUTPUT
                         Output filename
   -k IRD, --ird IRD     Path to .ird file
+  -d DECRYPTION_KEY, --decryption-key DECRYPTION_KEY
+                        Manually specify key
   -v, --verbose         Increase verbosity
-
+  -q, --quiet           Quiet mode, only prints on error
 ```
 
 First off, even before you install libray, you will need a compatible Blu-Ray drive that can read PS3 discs.

@@ -52,7 +52,7 @@ class IRD:
 
 
   def __init__(self, args):
-    """IRD constructor using args from argparse"""
+    """IRD constructor using args from argparse."""
 
     self.uncompress(args.ird) # TODO: Try/Except?
 
@@ -83,12 +83,12 @@ class IRD:
 
       self.region_count = core.to_int(input_ird.read(1), self.ORDER)
       self.region_hashes = []
-      for i in range(0, self.region_count):
+      for _ in range(0, self.region_count):
         self.region_hashes.append(input_ird.read(16))
 
       self.file_count = core.to_int(input_ird.read(4), self.ORDER)
       self.file_hashes = []
-      for i in range(0, self.file_count):
+      for _ in range(0, self.file_count):
         key = core.to_int(input_ird.read(8), self.ORDER)
         val = input_ird.read(16)
         self.file_hashes.append({'key': key, 'val': val})
@@ -96,7 +96,7 @@ class IRD:
       if self.version >= 9:
         self.pic = input_ird.read(115)
 
-      unused_bytes = input_ird.read(4) # Yeah, I don't know either.
+      input_ird.seek(input_ird.tell() + 4) # ?
 
       self.data1 = input_ird.read(16)
       self.data2 = input_ird.read(16)
@@ -114,7 +114,7 @@ class IRD:
 
 
   def uncompress(self, filename):
-    """Uncompress IRD. Assumes given .ird file is not compressed, but then tries to decompress it with zlib/gzfile if it was not uncompressed"""
+    """Uncompress IRD. Assumes given .ird file is not compressed, but then tries to decompress it with zlib/gzfile if it was not uncompressed."""
 
     uncompress = False
     with open(filename, 'rb') as input_ird:
@@ -131,7 +131,7 @@ class IRD:
 
   def print_info(self):
     # TODO: This could probably have been a __str__? Who cares?
-    """Print some info about the IRD"""
+    """Print some info about the IRD."""
 
     print('Info from IRD:')
     print('Version: %s' % self.version)

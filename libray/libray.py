@@ -31,16 +31,19 @@ except ImportError:
 
 if __name__ == '__main__':
 
-  # Parse command line arguments with argpase
   parser = argparse.ArgumentParser(description='A Libre (FLOSS) Python application for unencrypting, extracting, repackaging, and encrypting PS3 ISOs')
   parser._action_groups.pop()
+
   required = parser.add_argument_group('required arguments')
-  optional = parser.add_argument_group('optional arguments')
   required.add_argument('-i', '--iso', dest='iso', type=str, help='Path to .iso file or stream', required=True)
+
+  optional = parser.add_argument_group('optional arguments')
   optional.add_argument('-o', '--output', dest='output', type=str, help='Output filename', default='')
   optional.add_argument('-k', '--ird', dest='ird', type=str, help='Path to .ird file', default='')
-  optional.add_argument('-v', '--verbose', help='Increase verbosity', action='count')
+  optional.add_argument('-d', '--decryption-key', dest='decryption_key', type=str, help='Manually specify key', default='')
+  optional.add_argument('-v', '--verbose', dest='verbose', help='Increase verbosity', action='count')
+  optional.add_argument('-q', '--quiet', dest='quiet', help='Quiet mode, only prints on error', action='store_true')
+  
   args = parser.parse_args()
 
   core.decrypt(args)
-

@@ -66,14 +66,14 @@ def size(path):
   if stat.S_ISBLK(pathstat.st_mode):
     return open(path, 'rb').seek(0, os.SEEK_END)
 
-  # Otherwise, it's hopefully file
+  # Otherwise, it's hopefully a file
 
   return pathstat.st_size
 
 
 def read_seven_bit_encoded_int(fileobj, order):
   """Read an Int32, 7 bits at a time."""
-  # The highest bit of the byte when on, means to continue reading more bytes.
+  # The highest bit of the byte, when on, means to continue reading more bytes.
   count = 0
   shift = 0
   byte = -1
