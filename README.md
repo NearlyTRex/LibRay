@@ -83,6 +83,12 @@ Alternatively, you can first rip the disc to an ISO file and then decrypt from t
 libray -i ps3_game.iso -o ps3_game_decrypted.iso
 ```
 
+If libray is unable to download an .ird for your game, you could manually give it the key, if you have it:
+
+```
+libray -i ps3_game.iso -d DECRYPTION_KEY -o ps3_game_decrypted.iso
+```
+
 Then, if you want to feed it into RPCS3 just extract the contents of the .ISO:
 
 ```
@@ -131,7 +137,7 @@ clp = compressed length prefix
 
 ## Todo
 
-- Extract ISO (currently doable with `7z x output.iso`
+- Extract ISO (currently doable with `7z x output.iso`)
 - Repackage (unextract) and reencrypt iso?
 - Test .irds with version < 9
 - Custom command to backup all irds available
