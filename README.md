@@ -64,6 +64,7 @@ First off, even before you install libray, you will need a compatible Blu-Ray dr
 
 There's a compiled list of compatible drives here: [https://rpcs3.net/quickstart](https://rpcs3.net/quickstart) ([archive](https://web.archive.org/web/20190801060739/https://rpcs3.net/quickstart])) (see "Compatible Blu-ray disc drives section").
 
+### 1. Decrypt
 
 On some systems (eg. Linux), you can decrypt directly from the disc.
 
@@ -88,6 +89,8 @@ If libray is unable to download an .ird for your game, you could manually give i
 ```
 libray -i ps3_game.iso -d DECRYPTION_KEY -o ps3_game_decrypted.iso
 ```
+
+### 2. Extract decrypted ISO
 
 Then, if you want to feed it into RPCS3 just extract the contents of the .ISO:
 
@@ -122,7 +125,7 @@ This is due to multiple similarly named python crypto packages, one way to fix i
 ```
 sudo pip uninstall crypto
 sudo pip uninstall pycrypto
-sudo pip install pycrypto
+sudo pip install pycryptodome
 ```
 
 If you get any other errors, or have any other problem with libray, please [create an issue](https://notabug.org/necklace/libray/issues/new)!
