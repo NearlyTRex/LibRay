@@ -3,11 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [0.0.3] - 2020-08-03
 ### Changed
 - Default output iso name is game_id.iso instead of output.iso
 - Added quiet mode, enabled with the -q or --quiet flag argument
 - Added the ability to manually specify decryption key with -d or --decryption-key
+
+### Fixed
+- Fix Windows install bug by switching from pycrypto to pycryptodome
 
 ## [0.0.2] - 2019-07-07
 ### Added/Fixed
