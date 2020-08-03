@@ -95,11 +95,16 @@ def error(msg):
 
 def warning(msg):
   """Print a warning message"""
-  print('WARNING: %s. Continuing regardless' % msg)
+  print('WARNING: %s. Continuing regardless.' % msg)
 
 
 def download_ird(ird_name):
   """Download an .ird from GET_IRD_NET_LOC"""
+
+  # Check if file already exists and skip if it does
+  if os.path.exists(ird_name):
+    return
+
   ird_link = GET_IRD_NET_LOC + ird_name
   r = requests.get(ird_link, stream=True)
 
@@ -111,7 +116,10 @@ def download_ird(ird_name):
 def ird_by_game_id(game_id):
   """Using a game_id, download the responding .ird from ALL_IRD_NET_LOC"""
   gameid = game_id.replace('-','')
-  r = requests.get(ALL_IRD_NET_LOC, headers = {'User-Agent': 'Anonymous (You)' }, timeout=5)
+  try:
+    r = requests.get(ALL_IRD_NET_LOC, headers = {'User-Agent': 'Anonymous (You)' }, timeout=5)
+  except requests.exceptions.ReadTimeout:
+    core.error('Server timed out, fix your connection or manually specify a key/ird.')
   soup = BeautifulSoup(r.text, "html.parser")
 
   ird_name = False
@@ -121,7 +129,7 @@ def ird_by_game_id(game_id):
       ird_name = url
 
   if not ird_name:
-    error("Unable to download IRD, couldn't find link")
+    error("Unable to download IRD, couldn't find link. You could specify the decryption key with -d if you have it.")
 
   download_ird(ird_name)
 

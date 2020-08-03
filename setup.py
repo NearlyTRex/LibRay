@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
   name="libray",
-  version="0.0.4",
+  version="0.0.5",
   description='A Libre (FLOSS) Python application for unencrypting, extracting, repackaging, and encrypting PS3 ISOs',
   author="Nichlas Severinsen",
   author_email="ns@nsz.no",

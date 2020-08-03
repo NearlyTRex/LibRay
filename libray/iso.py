@@ -50,14 +50,14 @@ class ISO:
 
   def read_regions(self, input_iso, filename):
     """List with info dict (start, end, whether it's encrypted) for every region.
-    
+
     Basically, every other (odd numbered) region is encrypted.
     """
     regions = []
 
     encrypted = False
     for _ in range(0, self.number_of_regions):
-      
+
       regions.append({
         'start': core.to_int(input_iso.read(self.NUM_INFO_BYTES)) * core.SECTOR,
         'end': core.to_int(input_iso.read(self.NUM_INFO_BYTES)) * core.SECTOR,
@@ -104,7 +104,7 @@ class ISO:
     if not args.decryption_key:
       if not args.ird:
         if not args.quiet:
-          core.warning('No IRD file specified, downloading required file')
+          core.warning('No IRD file specified, finding required file')
         args.ird = core.ird_by_game_id(self.game_id) # Download ird
 
       self.ird = ird.IRD(args)
@@ -114,7 +114,7 @@ class ISO:
 
       if self.regions[-1]['start'] > self.size:
         core.error('Corrupt ISO or error in IRD. Expected filesize larger than %.2f GiB, actual size is %.2f GiB' % (self.regions[-1]['start'] / 1024**3, self.size / 1024**3 ) )
-      
+
       self.disc_key = cipher.encrypt(self.ird.data1)
     else:
       self.disc_key = cipher.encrypt(core.to_bytes(args.decryption_key))
@@ -127,7 +127,7 @@ class ISO:
       print('Decrypting with disc key: %s' % self.disc_key.hex())
 
     with open(args.iso, 'rb') as input_iso:
-      
+
       if not args.output:
         output_name = '%s.iso' % self.game_id
       else:
@@ -135,7 +135,8 @@ class ISO:
 
       with open(output_name, 'wb') as output_iso:
 
-        pbar = tqdm(total= (self.size // 2048) - 4 )
+        if not args.quiet:
+          pbar = tqdm(total= (self.size // 2048) )
 
         for region in self.regions:
           input_iso.seek(region['start'])
@@ -148,6 +149,9 @@ class ISO:
                 core.warning('Trying to read past the end of the file')
                 break
               output_iso.write(data)
+
+              if not args.quiet:
+                pbar.update(1)
             continue
           # Encrypted region, decrypt then write
           else:
@@ -168,9 +172,12 @@ class ISO:
 
               output_iso.write(decrypted)
 
-          pbar.update(1)
+              if not args.quiet:
+                pbar.update(1)
 
-        pbar.close()
+        if not args.quiet:
+          pbar.close()
+          print('Decryption complete.')
 
 
   def print_info(self):
