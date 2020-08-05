@@ -62,7 +62,7 @@ optional arguments:
 
 First off, even before you install libray, you will need a compatible Blu-Ray drive that can read PS3 discs.
 
-There's a compiled list of compatible drives here: [https://rpcs3.net/quickstart](https://rpcs3.net/quickstart) ([archive](https://web.archive.org/web/20190801060739/https://rpcs3.net/quickstart])) (see "Compatible Blu-ray disc drives section").
+There's a compiled list of compatible drives here: [https://rpcs3.net/quickstart#compatible_drives) ([archive](https://web.archive.org/web/20190801060739/https://rpcs3.net/quickstart])) (see "Compatible Blu-ray disc drives section").
 
 ### 1. Decrypt
 
