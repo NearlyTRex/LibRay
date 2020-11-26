@@ -31,7 +31,7 @@ For Arch or Arch-based GNU/Linux distributions there's an option to [install lib
 
 You will need an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers) (of which there are many).
 
-Then you will need to run the appropriate install command for that AUR helper using `libray-git` as package name.
+Then you will need to run the appropriate install command for that AUR helper using `libray` as package name.
 
 This will essentially automatically do the manual method for you.
 
