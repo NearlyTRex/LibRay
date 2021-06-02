@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 # libray - Libre Blu-Ray PS3 ISO Tool
-# Copyright © 2018 - 2019 Nichlas Severinsen
+# Copyright © 2018 - 2021 Nichlas Severinsen
 #
 # This file is part of libray.
 #
@@ -43,7 +43,7 @@ if __name__ == '__main__':
   optional.add_argument('-d', '--decryption-key', dest='decryption_key', type=str, help='Manually specify key', default='')
   optional.add_argument('-v', '--verbose', dest='verbose', help='Increase verbosity', action='count')
   optional.add_argument('-q', '--quiet', dest='quiet', help='Quiet mode, only prints on error', action='store_true')
-  
+
   args = parser.parse_args()
 
   core.decrypt(args)

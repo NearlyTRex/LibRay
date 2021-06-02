@@ -108,7 +108,7 @@ This project is Free, Libre, and Open Source Software; FLOSS, licensed under the
 
 See also COPYING or LICENSE.txt
 
-Copyright © 2018 - 2019 Nichlas Severinsen
+Copyright © 2018 - 2021 Nichlas Severinsen
 
 ## Error!
 

@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 
 # libray - Libre Blu-Ray PS3 ISO Tool
-# Copyright © 2018 - 2019 Nichlas Severinsen
+# Copyright © 2018 - 2021 Nichlas Severinsen
 #
 # This file is part of libray.
 #
