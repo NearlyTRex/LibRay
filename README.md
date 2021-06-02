@@ -42,10 +42,9 @@ This will essentially automatically do the manual method for you.
 ## How do I use it?
 
 ```
-usage: libray [-h] -i ISO [-o OUTPUT] [-k IRD] [-d DECRYPTION_KEY] [-v] [-q]
+usage: libray [-h] -i ISO [-o OUTPUT] [-k IRD] [-d DECRYPTION_KEY] [-v] [-q] [-r]
 
-A Libre (FLOSS) Python application for unencrypting, extracting, repackaging,
-and encrypting PS3 ISOs
+A Libre (FLOSS) Python application for unencrypting, extracting, repackaging, and encrypting PS3 ISOs
 
 required arguments:
   -i ISO, --iso ISO     Path to .iso file or stream
@@ -58,6 +57,7 @@ optional arguments:
                         Manually specify key
   -v, --verbose         Increase verbosity
   -q, --quiet           Quiet mode, only prints on error
+  -r, --re-encrypt      Re-encrypt .iso
 ```
 
 First off, even before you install libray, you will need a compatible Blu-Ray drive that can read PS3 discs.
@@ -98,9 +98,9 @@ Then, if you want to feed it into RPCS3 just extract the contents of the .ISO:
 7z x nfs_ps3_decrypted.iso
 ```
 
-And move the resulting folders into the appropriate folder for RPCS3:
+And move the resulting folders into a folder named after the game ID into the appropriate folder for RPCS3:
 
-- Linux: /home/username/.config/rpcs3/dev_hdd0/disc/
+- Linux: /home/username/.config/rpcs3/dev_hdd0/disc/BLUS0000
 
 ## License
 

@@ -43,7 +43,15 @@ if __name__ == '__main__':
   optional.add_argument('-d', '--decryption-key', dest='decryption_key', type=str, help='Manually specify key', default='')
   optional.add_argument('-v', '--verbose', dest='verbose', help='Increase verbosity', action='count')
   optional.add_argument('-q', '--quiet', dest='quiet', help='Quiet mode, only prints on error', action='store_true')
+  # -e is reserved for "extract" so re-encrypt is "-r"
+  optional.add_argument('-r', '--re-encrypt', dest='reencrypt', help='Re-encrypt .iso', action='store_true')
 
   args = parser.parse_args()
 
-  core.decrypt(args)
+  if args.reencrypt:
+
+    core.encrypt(args)
+
+  else:
+
+    core.decrypt(args)

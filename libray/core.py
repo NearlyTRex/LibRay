@@ -102,7 +102,7 @@ def download_ird(ird_name):
   """Download an .ird from GET_IRD_NET_LOC"""
 
   # Check if file already exists and skip if it does
-  if os.path.exists(ird_name):
+  if os.path.exists(ird_name): # TODO: might want to check that the file is valid first, could do a HEAD agains the url
     return
 
   ird_link = GET_IRD_NET_LOC + ird_name
@@ -119,7 +119,7 @@ def ird_by_game_id(game_id):
   try:
     r = requests.get(ALL_IRD_NET_LOC, headers = {'User-Agent': 'Anonymous (You)' }, timeout=5)
   except requests.exceptions.ReadTimeout:
-    core.error('Server timed out, fix your connection or manually specify a key/ird.')
+    error('Server timed out, fix your connection or manually specify a key/ird.')
   soup = BeautifulSoup(r.text, "html.parser")
 
   ird_name = False
@@ -140,7 +140,7 @@ def ird_by_game_id(game_id):
 
 
 def decrypt(args):
-  """Try to decrypt a given .iso using relevant .ird using args from argparse
+  """Try to decrypt a given .iso using relevant .ird or encryption key from argparse
 
   If no .ird is given this will try to automatically download an .ird file with the encryption/decryption key for the given game .iso
   """
@@ -150,4 +150,12 @@ def decrypt(args):
   input_iso.decrypt(args)
 
 
+def encrypt(args):
+  """Try to re-encrypt a decrypted .iso using relevant .ird or encryption key from argparse
 
+  If no .ird is given this will try to automatically download an .ird file with the encryption/decryption key for the given game .iso
+  """
+
+  input_iso = iso.ISO(args)
+
+  input_iso.encrypt(args)

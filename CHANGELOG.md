@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.6] - 2020-06-02
+### Fixed
+
+- Issue #6: fix decrypting using disc key not working
+
+### Added
+- Added .iso re-encryption with -r / --re-encrypt, default output is game_id_e.iso (example: BLUS-0000_e.iso)
+
 ## [0.0.5] - 2020-08-03
 ### Fixed
 - Issue #4: fix broken progressbar
@@ -15,7 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.0.3] - 2020-08-03
 ### Changed
-- Default output iso name is game_id.iso instead of output.iso
+- Default output iso name is game_id.iso instead of output.iso (example: BLUS-0000.iso)
 - Added quiet mode, enabled with the -q or --quiet flag argument
 - Added the ability to manually specify decryption key with -d or --decryption-key
 

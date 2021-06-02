@@ -180,10 +180,67 @@ class ISO:
           print('Decryption complete.')
 
 
+  def encrypt(self, args):
+    """Encrypt self using args from argparse."""
+
+    if not args.quiet:
+      print('Re-encrypting with disc key: %s' % self.disc_key.hex())
+
+    with open(args.iso, 'rb') as input_iso:
+
+      if not args.output:
+        output_name = '%s_e.iso' % self.game_id
+      else:
+        output_name = args.output
+
+      with open(output_name, 'wb') as output_iso:
+
+        if not args.quiet:
+          pbar = tqdm(total= (self.size // 2048) )
+
+        for region in self.regions:
+          input_iso.seek(region['start'])
+
+          # Unencrypted region, just copy it
+          if not region['enc']:
+            while input_iso.tell() < region['end']:
+              data = input_iso.read(core.SECTOR)
+              if not data and not args.quiet:
+                core.warning('Trying to read past the end of the file')
+                break
+              output_iso.write(data)
+
+              if not args.quiet:
+                pbar.update(1)
+            continue
+          # Decrypted region, re-encrypt it
+          else:
+            while input_iso.tell() < region['end']:
+              num = input_iso.tell() // 2048
+              iv = bytearray([0 for i in range(0,16)])
+              for j in range(0,16):
+                iv[16 - j - 1] = (num & 0xFF)
+                num >>= 8
+
+              data = input_iso.read(core.SECTOR)
+              if not data and not args.quiet:
+                core.warning('Trying to read past the end of the file')
+                break
+
+              cipher = AES.new(self.disc_key, AES.MODE_CBC, bytes(iv))
+              encrypted = cipher.encrypt(data)
+
+              output_iso.write(encrypted)
+
+              if not args.quiet:
+                pbar.update(1)
+
+
   def print_info(self):
     # TODO: This could probably have been a __str__? Who cares?
     """Print some info about the ISO."""
-
+    print('Game ID: %s' % self.game_id)
+    print('Key: %s' % self.disc_key.hex())
     print('Info from ISO:')
     print('Regions: %s' % self.number_of_regions)
     for i, region in enumerate(self.regions):
