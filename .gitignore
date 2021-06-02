@@ -2,6 +2,10 @@
 *.ird
 *.gz
 
+PS3_GAME/
+PS3_UPDATE/
+PS3_DISC.SFB
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

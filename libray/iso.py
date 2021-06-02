@@ -117,7 +117,7 @@ class ISO:
 
       self.disc_key = cipher.encrypt(self.ird.data1)
     else:
-      self.disc_key = cipher.encrypt(core.to_bytes(args.decryption_key))
+      self.disc_key = core.to_bytes(args.decryption_key)
 
 
   def decrypt(self, args):
