@@ -18,4 +18,6 @@ setup(
     'requests==2.22.0',
     'beautifulsoup4==4.7.1',
   ],
+  include_package_data=True,
+  package_data={'': ['data/keys.db']},
 )

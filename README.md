@@ -66,13 +66,13 @@ There's a compiled list of compatible drives here: [https://rpcs3.net/quickstart
 
 ### 1. Decrypt
 
-On some systems (eg. Linux), you can decrypt directly from the disc.
+On some systems (eg. Linux), you can decrypt directly from the disc:
 
 ```
 libray -i /dev/sr0 -o ps3_game_decrypted.iso
 ```
 
-Libray will automatically try to download an IRD decryption file for your iso. If you don't have internet connection, but you do have an .ird file you can specify that:
+Libray is bundled with redump keys and will automatically try to decrypt the .iso if it finds a compatible key. If not, it will try to download an IRD decryption file for your iso. If you don't have internet connection, but you do have an .ird file you can specify that:
 
 ```
 libray -i /dev/sr0 -k game_ird_file.ird -o ps3_game_decrypted.iso
@@ -138,11 +138,19 @@ If you get any other errors, or have any other problem with libray, please [crea
 
 clp = compressed length prefix
 
+## Building and Deployment
+
+1. Place redump keys in tools/keys and .dat in tools/
+2. Run keys2db.py, ensure it made a file in libray/data/keys.db
+3. Run `python3 setup.py sdist bdist_wheel`
+4. Run `twine upload dist/*`
+
 ## Todo
 
 - Extract ISO (currently doable with `7z x output.iso`)
-- Repackage (unextract) and reencrypt iso?
+- Repackage (unextract) iso
 - Test .irds with version < 9
 - Custom command to backup all irds available
 - Unit tests
-
+- Download .irds from vimm.net?
+- Parallelization?

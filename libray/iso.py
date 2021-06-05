@@ -20,6 +20,8 @@
 
 
 import sys
+import sqlite3
+import pkg_resources
 from tqdm import tqdm
 from Crypto.Cipher import AES
 
@@ -96,35 +98,67 @@ class ISO:
 
       self.game_id = input_iso.read(16).decode('utf8').strip()
 
-    if args.verbose and not args.quiet:
-      self.print_info()
-
     cipher = AES.new(core.ISO_SECRET, AES.MODE_CBC, core.ISO_IV)
 
     if not args.decryption_key:
       if not args.ird:
-        if not args.quiet:
-          core.warning('No IRD file specified, finding required file')
-        args.ird = core.ird_by_game_id(self.game_id) # Download ird
+        # No key or .ird specified. Let's first check if keys.db is packaged with this release
 
-      self.ird = ird.IRD(args)
+        redump = False
 
-      if self.ird.region_count != len(self.regions)-1:
-        core.error('Corrupt ISO or error in IRD. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)-1))
+        core.vprint('Checking for bundled redump keys', args)
 
-      if self.regions[-1]['start'] > self.size:
-        core.error('Corrupt ISO or error in IRD. Expected filesize larger than %.2f GiB, actual size is %.2f GiB' % (self.regions[-1]['start'] / 1024**3, self.size / 1024**3 ) )
+        try:
+          db = sqlite3.connect(pkg_resources.resource_filename(__name__, 'data/keys.db'))
+          c = db.cursor()
 
-      self.disc_key = cipher.encrypt(self.ird.data1)
+          core.vprint('Calculating crc32', args)
+
+          crc32 = core.crc32(args.iso)
+
+          keys = c.execute('SELECT * FROM games WHERE crc32=?', [crc32.lower()]).fetchall()
+
+          if keys:
+
+            self.disc_key = keys[0][-1]
+
+            core.vprint('.ISO identified as "%s"' % keys[0][0], args)
+
+            redump = True
+
+          else:
+            raise ValueError
+
+        except:
+          core.vprint('No keys found', args)
+
+        if not redump:
+
+        # Fallback to checking if an .ird exists
+
+          core.warning('No IRD file specified, finding required file', args)
+          args.ird = core.ird_by_game_id(self.game_id) # Download ird
+
+          self.ird = ird.IRD(args)
+
+          if self.ird.region_count != len(self.regions)-1:
+            core.error('Corrupt ISO or error in IRD. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)-1))
+
+          if self.regions[-1]['start'] > self.size:
+            core.error('Corrupt ISO or error in IRD. Expected filesize larger than %.2f GiB, actual size is %.2f GiB' % (self.regions[-1]['start'] / 1024**3, self.size / 1024**3 ) )
+
+          self.disc_key = cipher.encrypt(self.ird.data1)
     else:
       self.disc_key = core.to_bytes(args.decryption_key)
+
+    if args.verbose and not args.quiet:
+      self.print_info()
 
 
   def decrypt(self, args):
     """Decrypt self using args from argparse."""
 
-    if not args.quiet:
-      print('Decrypting with disc key: %s' % self.disc_key.hex())
+    core.vprint('Decrypting with disc key: %s' % self.disc_key.hex(), args)
 
     with open(args.iso, 'rb') as input_iso:
 
@@ -145,8 +179,8 @@ class ISO:
           if not region['enc']:
             while input_iso.tell() < region['end']:
               data = input_iso.read(core.SECTOR)
-              if not data and not args.quiet:
-                core.warning('Trying to read past the end of the file')
+              if not data:
+                core.warning('Trying to read past the end of the file', args)
                 break
               output_iso.write(data)
 
@@ -163,8 +197,8 @@ class ISO:
                 num >>= 8
 
               data = input_iso.read(core.SECTOR)
-              if not data and not args.quiet:
-                core.warning('Trying to read past the end of the file')
+              if not data:
+                core.warning('Trying to read past the end of the file', args)
                 break
 
               cipher = AES.new(self.disc_key, AES.MODE_CBC, bytes(iv))
@@ -177,14 +211,14 @@ class ISO:
 
         if not args.quiet:
           pbar.close()
-          print('Decryption complete.')
+
+        core.vprint('Decryption complete!', args)
 
 
   def encrypt(self, args):
     """Encrypt self using args from argparse."""
 
-    if not args.quiet:
-      print('Re-encrypting with disc key: %s' % self.disc_key.hex())
+    core.vprint('Re-encrypting with disc key: %s' % self.disc_key.hex(), args)
 
     with open(args.iso, 'rb') as input_iso:
 
@@ -205,8 +239,8 @@ class ISO:
           if not region['enc']:
             while input_iso.tell() < region['end']:
               data = input_iso.read(core.SECTOR)
-              if not data and not args.quiet:
-                core.warning('Trying to read past the end of the file')
+              if not data:
+                core.warning('Trying to read past the end of the file', args)
                 break
               output_iso.write(data)
 
@@ -223,8 +257,8 @@ class ISO:
                 num >>= 8
 
               data = input_iso.read(core.SECTOR)
-              if not data and not args.quiet:
-                core.warning('Trying to read past the end of the file')
+              if not data:
+                core.warning('Trying to read past the end of the file', args)
                 break
 
               cipher = AES.new(self.disc_key, AES.MODE_CBC, bytes(iv))
@@ -234,6 +268,11 @@ class ISO:
 
               if not args.quiet:
                 pbar.update(1)
+
+        if not args.quiet:
+          pbar.close()
+
+        core.vprint('Re-encryption complete!', args)
 
 
   def print_info(self):

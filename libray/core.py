@@ -22,6 +22,7 @@
 import os
 import sys
 import stat
+import zlib
 import shutil
 import requests
 from bs4 import BeautifulSoup
@@ -89,13 +90,22 @@ def read_seven_bit_encoded_int(fileobj, order):
 
 def error(msg):
   """Print fatal error message and terminate"""
-  print('ERROR: %s' % msg)
+  print('[ERROR] %s' % msg)
   sys.exit(1)
 
 
-def warning(msg):
-  """Print a warning message"""
-  print('WARNING: %s. Continuing regardless.' % msg)
+def warning(msg, args):
+  """Print a warning message. Warning messages can be silenced with --quiet"""
+
+  if not args.quiet:
+    print('[WARNING] %s. Continuing regardless.' % msg)
+
+
+def vprint(msg, args):
+  """Vprint, verbose print, can be silenced with --quiet"""
+
+  if not args.quiet:
+    print('[*] ' + msg)
 
 
 def download_ird(ird_name):
@@ -134,6 +144,22 @@ def ird_by_game_id(game_id):
   download_ird(ird_name)
 
   return(ird_name)
+
+
+def crc32(filename):
+  """Calculate crc32 for file"""
+
+  with open(filename, 'rb') as infile:
+
+    crc32 = 0
+
+    while True:
+      data = infile.read(65536)
+      if not data:
+        break
+      crc32 = zlib.crc32(data, crc32)
+
+    return "%08X" % (crc32 & 0xFFFFFFFF)
 
 
 # Main functions

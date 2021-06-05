@@ -3,13 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.0.6] - 2020-06-02
+## [0.0.6] - 2021-06-05
 ### Fixed
-
 - Issue #6: fix decrypting using disc key not working
 
 ### Added
 - Added .iso re-encryption with -r / --re-encrypt, default output is game_id_e.iso (example: BLUS-0000_e.iso)
+- Added ability to bundle redump keys in the package data, libray now checks if it already has the key for the .iso
+
+### Changed
+- Changed printing to use `[*]` in front
 
 ## [0.0.5] - 2020-08-03
 ### Fixed
