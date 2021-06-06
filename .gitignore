@@ -1,18 +1,22 @@
 *.iso
 *.ird
 *.gz
+*.db
 
 PS3_GAME/
 PS3_UPDATE/
 PS3_DISC.SFB
+
+*/PS3_GAME
+*/PS3_UPDATE
+*PS3_DISC.SFB
 
 tools/keys/*
 tools/*/*
 tools/*.db
 tools/*.dat
 
-libra/data/*.db
-*.db
+libray/data/*.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

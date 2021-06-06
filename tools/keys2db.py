@@ -55,6 +55,8 @@ if __name__ == '__main__':
 
     datfile = any_dats[0]
 
+    warnings = 0
+
     with open(datfile, 'r') as infile:
 
         soup = bs4.BeautifulSoup(infile.read(), features='html5lib')
@@ -70,7 +72,7 @@ if __name__ == '__main__':
                 with open(cwd / ('keys/' + name + '.key'), 'rb') as keyfile:
                     entry.append(keyfile.read())
             except FileNotFoundError:
-                print('Warning: key not found for ' + name)
+                warnings += 1
                 c.execute('INSERT INTO games (name, size, crc32, md5, sha1) VALUES (?, ?, ?, ?, ?)', entry)
                 continue
 
@@ -82,6 +84,7 @@ if __name__ == '__main__':
 
     shutil.copyfile(db_path, ((cwd.parent / 'libray') / 'data/') / db_path.name)
 
+    print('Warning: no keyfiles for %s titles' % str(warnings))
 
 
 

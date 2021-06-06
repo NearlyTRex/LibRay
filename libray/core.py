@@ -162,6 +162,42 @@ def crc32(filename):
     return "%08X" % (crc32 & 0xFFFFFFFF)
 
 
+def serial_country(title):
+  """Get country from disc serial / productcode / title_id"""
+
+  if title[2] == 'A':
+    return 'Asia'
+  if title[2] == 'C':
+    return 'China'
+  if title[2] == 'E':
+    return 'Europe'
+  if title[2] == 'H':
+    return 'Hong Kong'
+  if title[2] == 'J' or title[2] == 'P':
+    return 'Japan'
+  if title[2] == 'K':
+    return 'Korea'
+  if title[2] == 'U':
+    return 'USA'
+
+  raise ValueError('Unknown country?!')
+
+
+def multiman_title(title):
+  """Fix special characters in title for Multiman style"""
+
+  replace = {
+    ':': ' -',
+    '/': '-',
+    '™': ' -',
+  }
+
+  for key, val in replace.items():
+    title = title.replace(key, val)
+
+  return title
+
+
 # Main functions
 
 
@@ -173,7 +209,7 @@ def decrypt(args):
 
   input_iso = iso.ISO(args)
 
-  input_iso.decrypt(args)
+  input_iso.decrypt(args) # TODO: some of the logic should probably be moved up here instead of residing in the decrypt function
 
 
 def encrypt(args):

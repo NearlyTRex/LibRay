@@ -21,6 +21,7 @@
 
 import sys
 import sqlite3
+import pathlib
 import pkg_resources
 from tqdm import tqdm
 from Crypto.Cipher import AES
@@ -29,9 +30,11 @@ from Crypto.Cipher import AES
 try:
   from libray import core
   from libray import ird
+  from libray import sfo
 except ImportError:
   import core
   import ird
+  import sfo
 
 
 class ISO:
@@ -93,10 +96,53 @@ class ISO:
 
       self.regions = self.read_regions(input_iso, args.iso)
 
-      # Seek to the start of region 2, '+ 16' skips a section containing some 'playstation'
+      # Seek to the start of sector 2, '+ 16' skips a section containing some 'playstation'
       input_iso.seek(core.SECTOR + 16)
 
       self.game_id = input_iso.read(16).decode('utf8').strip()
+
+      # Find PARAM.SFO
+
+      core.vprint('Searching for PARAM.SFO', args)
+
+      input_iso.seek(0)
+      counter = 1
+      found_param = False
+
+      while True:
+
+        data = input_iso.read(4)
+
+        if not data:
+          break
+
+        if data == b'\x00\x50\x53\x46':
+          found_param = True
+          break
+
+        input_iso.seek((core.SECTOR * counter))
+
+        counter += 1
+
+      game_title = ''
+
+      if found_param:
+        input_iso.seek(input_iso.tell() - 4)
+        try:
+          param = sfo.SFO(input_iso)
+          core.vprint('PARAM.SFO found', args)
+          game_title = core.multiman_title(param['TITLE'])
+
+          if args.verbose and not args.quiet:
+            param.print_info()
+
+          # Set output to multiman style
+
+          if not args.output:
+            args.output = '%s [%s].iso' % (game_title, param['TITLE_ID'])
+
+        except:
+          core.warning('Failed reading SFO')
 
     cipher = AES.new(core.ISO_SECRET, AES.MODE_CBC, core.ISO_IV)
 
@@ -109,20 +155,35 @@ class ISO:
         core.vprint('Checking for bundled redump keys', args)
 
         try:
-          db = sqlite3.connect(pkg_resources.resource_filename(__name__, 'data/keys.db'))
+          try:
+            db = sqlite3.connect(pkg_resources.resource_filename(__name__, 'data/keys.db'))
+          except FileNotFoundError:
+            db = sqlite3.connect((pathlib.Path(__file__).resolve() / 'data/') / 'keys.db')
           c = db.cursor()
 
-          core.vprint('Calculating crc32', args)
+          if not game_title:
+            raise ValueError
 
-          crc32 = core.crc32(args.iso)
+          core.vprint('Trying to find redump key based on size and game title', args)
 
-          keys = c.execute('SELECT * FROM games WHERE crc32=?', [crc32.lower()]).fetchall()
+          #core.vprint('Calculating crc32', args)
+
+          #input_iso.seek(0)
+
+          # crc32 = core.crc32(args.iso)
+
+          #keys = c.execute('SELECT * FROM games WHERE crc32=?', [crc32.lower()]).fetchall()
+
+          keys = c.execute('SELECT * FROM games WHERE lower(name) LIKE ? AND size = ?', ['%' + game_title.lower() + '%', str(self.size)]).fetchall()
 
           if keys:
 
             self.disc_key = keys[0][-1]
 
-            core.vprint('.ISO identified as "%s"' % keys[0][0], args)
+            if not self.disc_key:
+              raise ValueError
+
+            core.vprint('Found potential redump key: "%s"' % keys[0][0], args)
 
             redump = True
 
@@ -159,6 +220,7 @@ class ISO:
     """Decrypt self using args from argparse."""
 
     core.vprint('Decrypting with disc key: %s' % self.disc_key.hex(), args)
+    core.vprint('Decrypted .iso is output to: %s' % args.output, args)
 
     with open(args.iso, 'rb') as input_iso:
 

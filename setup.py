@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
+
 from setuptools import setup
+
+
+with open('README.md') as f:
+  long_description = f.read()
+
 
 setup(
   name="libray",
-  version="0.0.6",
+  version="0.0.7",
   description='A Libre (FLOSS) Python application for unencrypting, extracting, repackaging, and encrypting PS3 ISOs',
+  long_description=long_description,
+  long_description_content_type='text/markdown',
   author="Nichlas Severinsen",
   author_email="ns@nsz.no",
   url="https://notabug.org/necklace/libray",

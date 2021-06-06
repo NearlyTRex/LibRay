@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.7] - Unreleased
+### Added
+- PARAM.SFO reader (sfo.py)
+- Now searches for PARAM.SFO first and uses game title from there instead of crc32.
+- long_description in setup.py for description on PyPI
+
+### Changed
+- Multiman styling by default if PARAM.SFO is found
+
+### Removed
+- No longer checks crc32, see Added. Might re-add as last fallback later.
+
 ## [0.0.6] - 2021-06-05
 ### Fixed
 - Issue #6: fix decrypting using disc key not working

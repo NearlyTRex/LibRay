@@ -132,14 +132,19 @@ If you get any other errors, or have any other problem with libray, please [crea
 
 ## Development
 
-[see also](http://www.psdevwiki.com/ps3/Bluray_disc#Encryption) ([archive.fo](https://archive.fo/hN1E6))
+[Bluray disc encryption](http://www.psdevwiki.com/ps3/Bluray_disc#Encryption) ([archive.fo](https://archive.fo/hN1E6))
+
+[.SFO](https://www.psdevwiki.com/ps3/PARAM.SFO) ([archive.fo](https://archive.fo/HLJZG))
+
+[TITLE_ID for Physical Media](https://www.psdevwiki.com/ps3/Template:TITLE_ID_for_Physical_Media) ([archive.fo](https://archive.fo/R8tCz))
 
 [7bit encoded int / RLE / CLP](https://github.com/microsoft/referencesource/blob/1acafe20a789a55daa17aac6bb47d1b0ec04519f/mscorlib/system/io/binaryreader.cs#L582-L600)
 
 clp = compressed length prefix
 
-## Building and Deployment
+## Deployment
 
+0. `pip3 install wheel twine`
 1. Place redump keys in tools/keys and .dat in tools/
 2. Run keys2db.py, ensure it made a file in libray/data/keys.db
 3. Run `python3 setup.py sdist bdist_wheel`
