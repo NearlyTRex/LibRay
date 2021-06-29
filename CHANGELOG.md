@@ -3,10 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.0.7] - Unreleased
+## [0.0.7] - 2021-06-29
 ### Added
 - PARAM.SFO reader (sfo.py)
 - Now searches for PARAM.SFO first and uses game title from there instead of crc32.
+- To identify keys, checks if .iso has a unique size, then if it has the name from PARAM.SFO in it + size, then downloads .ird
 - long_description in setup.py for description on PyPI
 
 ### Changed

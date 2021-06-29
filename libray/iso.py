@@ -111,14 +111,23 @@ class ISO:
 
       while True:
 
-        data = input_iso.read(4)
+        data = input_iso.read(8)
 
         if not data:
           break
 
-        if data == b'\x00\x50\x53\x46':
+        #if data == b'PS3LICDA':
+        #  print(data)
+
+        if data[0:4] == b'\x00\x50\x53\x46':
           found_param = True
+
+          #input_iso.seek(input_iso.tell() - 8)
+          #param = sfo.SFO(input_iso)
+          #print(param['TITLE'])
+          #print(param['TITLE_ID'])
           break
+
 
         input_iso.seek((core.SECTOR * counter))
 
@@ -127,10 +136,11 @@ class ISO:
       game_title = ''
 
       if found_param:
-        input_iso.seek(input_iso.tell() - 4)
+        input_iso.seek(input_iso.tell() - 8)
         try:
           param = sfo.SFO(input_iso)
           core.vprint('PARAM.SFO found', args)
+
           game_title = core.multiman_title(param['TITLE'])
 
           if args.verbose and not args.quiet:
@@ -141,10 +151,13 @@ class ISO:
           if not args.output:
             args.output = '%s [%s].iso' % (game_title, param['TITLE_ID'])
 
-        except:
-          core.warning('Failed reading SFO')
+        except Exception:
+
+          core.warning('Failed reading SFO', args)
 
     cipher = AES.new(core.ISO_SECRET, AES.MODE_CBC, core.ISO_IV)
+
+    # TODO: clean up this logic
 
     if not args.decryption_key:
       if not args.ird:
@@ -161,10 +174,7 @@ class ISO:
             db = sqlite3.connect((pathlib.Path(__file__).resolve() / 'data/') / 'keys.db')
           c = db.cursor()
 
-          if not game_title:
-            raise ValueError
 
-          core.vprint('Trying to find redump key based on size and game title', args)
 
           #core.vprint('Calculating crc32', args)
 
@@ -174,21 +184,39 @@ class ISO:
 
           #keys = c.execute('SELECT * FROM games WHERE crc32=?', [crc32.lower()]).fetchall()
 
-          keys = c.execute('SELECT * FROM games WHERE lower(name) LIKE ? AND size = ?', ['%' + game_title.lower() + '%', str(self.size)]).fetchall()
+          # First check if there's only one game with this exact size
 
-          if keys:
+          core.vprint('Trying to find redump key based on size', args)
+
+          keys = c.execute('SELECT * FROM games WHERE size = ?', [str(self.size)]).fetchall()
+
+          if len(keys) == 1:
 
             self.disc_key = keys[0][-1]
 
-            if not self.disc_key:
-              raise ValueError
-
-            core.vprint('Found potential redump key: "%s"' % keys[0][0], args)
-
             redump = True
 
-          else:
+          # If not, see if we can filter it out based on name and size
+
+          if not redump:
+
+            core.vprint('Trying to find redump key based on size and game title', args)
+
+            if not game_title:
+              raise ValueError
+
+            keys = c.execute('SELECT * FROM games WHERE lower(name) LIKE ? AND size = ?', ['%' + game_title.lower() + '%', str(self.size)]).fetchall()
+
+            if keys:
+
+              self.disc_key = keys[0][-1]
+
+              redump = True
+
+          if not self.disc_key:
             raise ValueError
+
+          core.vprint('Found potential redump key: "%s"' % keys[0][0], args)
 
         except:
           core.vprint('No keys found', args)
@@ -220,7 +248,6 @@ class ISO:
     """Decrypt self using args from argparse."""
 
     core.vprint('Decrypting with disc key: %s' % self.disc_key.hex(), args)
-    core.vprint('Decrypted .iso is output to: %s' % args.output, args)
 
     with open(args.iso, 'rb') as input_iso:
 
@@ -228,6 +255,8 @@ class ISO:
         output_name = '%s.iso' % self.game_id
       else:
         output_name = args.output
+
+      core.vprint('Decrypted .iso is output to: %s' % output_name, args)
 
       with open(output_name, 'wb') as output_iso:
 
@@ -288,6 +317,8 @@ class ISO:
         output_name = '%s_e.iso' % self.game_id
       else:
         output_name = args.output
+
+      core.vprint('Re-encrypted .iso is output to: %s' % output_name, args)
 
       with open(output_name, 'wb') as output_iso:
 
