@@ -200,12 +200,12 @@ class ISO:
 
           if not redump:
 
-            core.vprint('Trying to find redump key based on size and game title', args)
+            core.vprint('Trying to find redump key based on size, game title, and country', args)
 
             if not game_title:
               raise ValueError
 
-            keys = c.execute('SELECT * FROM games WHERE lower(name) LIKE ? AND size = ?', ['%' + game_title.lower() + '%', str(self.size)]).fetchall()
+            keys = c.execute('SELECT * FROM games WHERE lower(name) LIKE ? AND size = ?', ['%' + '%'.join(game_title.lower().split(' ')) + '%' + core.serial_country(self.game_id).lower() + '%', str(self.size)]).fetchall()
 
             if keys:
 
