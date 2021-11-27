@@ -189,7 +189,8 @@ def multiman_title(title):
   replace = {
     ':': ' -',
     '/': '-',
-    '™': ' -',
+    '™': '',
+    '®': '',
   }
 
   for key, val in replace.items():
