@@ -47,6 +47,12 @@ if __name__ == '__main__':
 
     cwd = pathlib.Path(__file__).resolve().parent
 
+    keys_path = cwd / 'keys'
+
+    if not keys_path.exists():
+        print('Error: No keys/ folder. Place the .key files in a tools/keys/ folder')
+        sys.exit()
+
     any_dats = [x for x in cwd.glob('*.dat')]
 
     if not any_dats:
@@ -81,6 +87,11 @@ if __name__ == '__main__':
     db.commit()
 
     db.close()
+
+    data_path = (cwd.parent / 'libray') / 'data/'
+
+    if not data_path.exists():
+        data_path.mkdir()
 
     shutil.copyfile(db_path, ((cwd.parent / 'libray') / 'data/') / db_path.name)
 

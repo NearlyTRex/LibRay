@@ -51,10 +51,10 @@ class IRD:
   MAGIC_STRING = b'3IRD'
 
 
-  def __init__(self, args):
+  def __init__(self, ird_path, verbose=False):
     """IRD constructor using args from argparse."""
 
-    self.uncompress(args.ird) # TODO: Try/Except?
+    self.uncompress(ird_path) # TODO: Try/Except?
 
     self.size = core.size(self.TEMP_FILE)
 
@@ -107,7 +107,7 @@ class IRD:
       if self.version < 7:
         self.uid = core.to_int(input_ird.read(4), self.ORDER)
 
-      if args.verbose:
+      if verbose:
         self.print_info()
 
     os.remove(self.TEMP_FILE)

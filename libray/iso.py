@@ -174,8 +174,6 @@ class ISO:
             db = sqlite3.connect((pathlib.Path(__file__).resolve() / 'data/') / 'keys.db')
           c = db.cursor()
 
-
-
           #core.vprint('Calculating crc32', args)
 
           #input_iso.seek(0)
@@ -228,7 +226,7 @@ class ISO:
           core.warning('No IRD file specified, finding required file', args)
           args.ird = core.ird_by_game_id(self.game_id) # Download ird
 
-          self.ird = ird.IRD(args)
+          self.ird = ird.IRD(args.ird)
 
           if self.ird.region_count != len(self.regions)-1:
             core.error('Corrupt ISO or error in IRD. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)-1))
@@ -237,6 +235,21 @@ class ISO:
             core.error('Corrupt ISO or error in IRD. Expected filesize larger than %.2f GiB, actual size is %.2f GiB' % (self.regions[-1]['start'] / 1024**3, self.size / 1024**3 ) )
 
           self.disc_key = cipher.encrypt(self.ird.data1)
+
+      else:
+
+        # .ird file given with -k / --ird
+
+        self.ird = ird.IRD(args.ird)
+
+        if self.ird.region_count != len(self.regions)-1:
+          core.error('Corrupt ISO or error in IRD. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)-1))
+
+        if self.regions[-1]['start'] > self.size:
+          core.error('Corrupt ISO or error in IRD. Expected filesize larger than %.2f GiB, actual size is %.2f GiB' % (self.regions[-1]['start'] / 1024**3, self.size / 1024**3 ) )
+
+        self.disc_key = cipher.encrypt(self.ird.data1)
+
     else:
       self.disc_key = core.to_bytes(args.decryption_key)
 
