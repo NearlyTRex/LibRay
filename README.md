@@ -142,6 +142,10 @@ If you get any other errors, or have any other problem with libray, please [crea
 
 clp = compressed length prefix
 
+## Tests
+
+`python -m unittest discover`
+
 ## Deployment
 
 0. `pip3 install wheel twine`
