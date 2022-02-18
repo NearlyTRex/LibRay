@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.9] - 2022-02-19
+### Fixed
+- Issue #11: fix read_regions bug which caused incorrect encryption/decryption
+
+### Changed
+- A little more lenient requirements using ~=
+
 ## [0.0.8] - 2021-11-27
 ### Fixed
 - Issue #7: fix manually supplied .ird files not being used.

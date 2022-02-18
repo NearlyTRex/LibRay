@@ -11,7 +11,7 @@ with open('README.md') as f:
 
 setup(
   name="libray",
-  version="0.0.8",
+  version="0.0.9",
   description='A Libre (FLOSS) Python application for unencrypting, extracting, repackaging, and encrypting PS3 ISOs',
   long_description=long_description,
   long_description_content_type='text/markdown',
