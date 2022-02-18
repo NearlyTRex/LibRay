@@ -21,10 +21,11 @@ setup(
   packages=['libray'],
   scripts=['libray/libray'],
   install_requires=[
-    'tqdm==4.32.2',
-    'pycryptodome==3.9.8',
-    'requests==2.22.0',
-    'beautifulsoup4==4.7.1',
+    'tqdm~=4.62.3',
+    'pycryptodome~=3.14.1',
+    'requests~=2.27.1',
+    'beautifulsoup4~=4.10.0',
+    'html5lib~=1.1'
   ],
   include_package_data=True,
   package_data={'': ['data/keys.db']},
