@@ -53,28 +53,38 @@ class ISO:
   NUM_INFO_BYTES = 4
 
 
-  def read_regions(self, input_iso, filename):
+  def read_regions(self, input_iso):
     """List with info dict (start, end, whether it's encrypted) for every region.
 
     Basically, every other (odd numbered) region is encrypted.
     """
-    regions = []
+
+    # The first region is always unencrypted
 
     encrypted = False
-    for _ in range(0, self.number_of_regions):
 
-      regions.append({
-        'start': core.to_int(input_iso.read(self.NUM_INFO_BYTES)) * core.SECTOR,
-        'end': core.to_int(input_iso.read(self.NUM_INFO_BYTES)) * core.SECTOR,
-        'enc': encrypted
-      })
+    regions = [{
+      'start': core.to_int(input_iso.read(self.NUM_INFO_BYTES)) * core.SECTOR, # Should always be 0?
+      'end': core.to_int(input_iso.read(self.NUM_INFO_BYTES)) * core.SECTOR + core.SECTOR,
+      'enc': encrypted
+    }]
 
-      input_iso.seek(input_iso.tell() - self.NUM_INFO_BYTES)
+    # We'll read 4 bytes until we hit a non-size (<=0)
+
+    while True:
 
       encrypted = not encrypted
 
-    # Last region might not actually be 2048 bytes, so we'll just cheat
-    regions[-1]['end'] = self.size
+      end = core.to_int(input_iso.read(self.NUM_INFO_BYTES)) * core.SECTOR
+
+      if not end:
+        break
+
+      regions.append({
+        'start': regions[-1]['end'],
+        'end': end + core.SECTOR - (core.SECTOR if encrypted else 0),
+        'enc': encrypted
+      })
 
     return regions
 
@@ -88,13 +98,13 @@ class ISO:
       core.error('looks like ISO file/mount is empty?')
 
     with open(args.iso, 'rb') as input_iso:
-      # Get number of regions (times two as the number represents both encrypted and decrypted regions  )
-      self.number_of_regions = core.to_int(input_iso.read(self.NUM_INFO_BYTES)) * 2
+      # Get number of unencrypted regions
+      self.number_of_unencrypted_regions = core.to_int(input_iso.read(self.NUM_INFO_BYTES))
 
       # Skip unused bytes
       input_iso.seek(input_iso.tell() + self.NUM_INFO_BYTES)
 
-      self.regions = self.read_regions(input_iso, args.iso)
+      self.regions = self.read_regions(input_iso)
 
       # Seek to the start of sector 2, '+ 16' skips a section containing some 'playstation'
       input_iso.seek(core.SECTOR + 16)
@@ -228,8 +238,8 @@ class ISO:
 
           self.ird = ird.IRD(args.ird)
 
-          if self.ird.region_count != len(self.regions)-1:
-            core.error('Corrupt ISO or error in IRD. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)-1))
+          if self.ird.region_count != len(self.regions):
+            core.error('Corrupt ISO or error in IRD. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)))
 
           if self.regions[-1]['start'] > self.size:
             core.error('Corrupt ISO or error in IRD. Expected filesize larger than %.2f GiB, actual size is %.2f GiB' % (self.regions[-1]['start'] / 1024**3, self.size / 1024**3 ) )
@@ -242,8 +252,8 @@ class ISO:
 
         self.ird = ird.IRD(args.ird)
 
-        if self.ird.region_count != len(self.regions)-1:
-          core.error('Corrupt ISO or error in IRD. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)-1))
+        if self.ird.region_count != len(self.regions):
+          core.error('Corrupt ISO or error in IRD. Expected %s regions, found %s regions' % (self.ird.region_count, len(self.regions)))
 
         if self.regions[-1]['start'] > self.size:
           core.error('Corrupt ISO or error in IRD. Expected filesize larger than %.2f GiB, actual size is %.2f GiB' % (self.regions[-1]['start'] / 1024**3, self.size / 1024**3 ) )
@@ -387,7 +397,7 @@ class ISO:
     print('Game ID: %s' % self.game_id)
     print('Key: %s' % self.disc_key.hex())
     print('Info from ISO:')
-    print('Regions: %s' % self.number_of_regions)
+    print('Unencrypted regions: %s' % self.number_of_unencrypted_regions)
     for i, region in enumerate(self.regions):
-      print(i, region)
+      print(i, region, region['start'] // core.SECTOR, region['end'] // core.SECTOR)
 
